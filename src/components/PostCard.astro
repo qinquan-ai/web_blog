@@ -1,0 +1,121 @@
+---
+import { SITE, TAGS } from '../lib/config';
+import { formatDate } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  slug: string;
+  readingTime?: string;
+}
+
+const { title, description, pubDate, tags = [], slug, readingTime = '5 min' } = Astro.props;
+
+const formattedDate = formatDate(pubDate);
+
+const tagData = tags
+  .map(t => TAGS.find(tag => tag.slug === t))
+  .filter(Boolean);
+---
+
+<article class="post-card">
+  <a href={`/blog/${slug}`} class="post-card-link" aria-label={title}>
+    <div class="post-card-inner">
+      <h2 class="post-card-title">{title}</h2>
+      <p class="post-card-desc">{description}</p>
+      
+      <div class="post-card-footer">
+        <div class="post-card-meta">
+          <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+          <span class="meta-sep">·</span>
+          <span>{readingTime}</span>
+        </div>
+        
+        {tagData.length > 0 && (
+          <div class="post-card-tags">
+            {tagData.map(tag => (
+              <span class="tag-chip">{tag!.name}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .post-card {
+    /* 取消了原本生硬的下划线 */
+    /* border-bottom: 1px solid var(--border-light); */
+  }
+
+  .post-card-link {
+    display: block;
+    padding: var(--space-6) var(--space-6);
+    margin: 0 calc(var(--space-6) * -1); /* 负边距让文字依然与外部对齐，但有了 Hover 空间 */
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-xl); /* 圆润的包围感 */
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+
+  .post-card-link:hover {
+    background: var(--bg-secondary); /* 悬浮时浮现微弱的底色 */
+  }
+
+  .post-card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .post-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .post-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .post-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--text-primary);
+    transition: color var(--duration-fast);
+  }
+
+  .post-card-link:hover .post-card-title {
+    color: var(--accent);
+  }
+
+  .post-card-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+  }
+  .meta-sep { opacity: 0.5; }
+</style>

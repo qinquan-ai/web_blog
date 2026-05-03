@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import BackLink from '../../components/BackLink.astro';
+import { getCollection } from 'astro:content';
+import { TAGS } from '../../lib/config';
+import { enrichPostsWithReadingTime } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return TAGS.map(tag => ({
+    params: { tag: tag.slug },
+    props: {
+      tag,
+      posts: posts
+        .filter(p => p.data.tags?.includes(tag.slug))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const enrichedPosts = await enrichPostsWithReadingTime(posts);
+---
+
+<Base
+  title={`${tag.name} · 标签`}
+  description={`标签 "${tag.name}" 下的所有文章`}
+>
+  <div class="tag-page">
+    <div class="container">
+      <BackLink href="/tags" label="所有标签" />
+
+      <header class="page-header">
+        <div class="tag-badge" style={`--tag-color: ${tag.color}`}>
+          <span class="tag-dot" style={`background: ${tag.color}`}></span>
+          <span class="tag-name">{tag.name}</span>
+        </div>
+        <p class="page-desc text-secondary">
+          {posts.length} 篇文章
+        </p>
+      </header>
+
+      <div class="posts-list">
+        {enrichedPosts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            slug={post.slug}
+            readingTime={post.readingTime}
+          />
+        ))}
+
+        {posts.length === 0 && (
+          <div class="empty-state">
+            <p class="text-secondary">该标签下暂无文章。</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .tag-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+
+  /* page-header, page-desc now in global.css */
+
+  .tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .tag-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .tag-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--tag-color);
+  }
+
+  .posts-list { margin-top: var(--space-2); }
+</style>

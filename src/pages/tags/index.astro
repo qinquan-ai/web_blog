@@ -1,0 +1,131 @@
+---
+import Base from '../../layouts/Base.astro';
+import { TAGS } from '../../lib/config';
+---
+
+<Base title="标签" description="按标签浏览所有文章">
+  <div class="tags-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">标签</h1>
+        <p class="page-desc text-secondary">
+          {TAGS.length} 个标签，覆盖 AI / 架构 / 工具 / 踩坑
+        </p>
+      </header>
+
+      <div class="neuron-network">
+        {TAGS.map((tag, index) => (
+          <a href={`/tags/${tag.slug}`} class="neuron-node" style={`--tag-color: ${tag.color}; --anim-delay: -${index * 0.7}s;`}>
+            <div class="neuron-content">
+              <div class="neuron-core"></div>
+              <span class="neuron-name">{tag.name}</span>
+              <span class="neuron-slug text-xs font-mono">#{tag.slug}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .tags-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+
+  /* page-header, page-title, page-desc now in global.css */
+
+  .neuron-network {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5) var(--space-4);
+    padding: var(--space-4) 0;
+  }
+
+  .neuron-node {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    border-radius: 100px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: float 4s ease-in-out infinite;
+    animation-delay: var(--anim-delay);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .neuron-node::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    right: -20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--tag-color), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 0;
+  }
+
+  .neuron-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .neuron-core {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tag-color);
+    box-shadow: 0 0 10px var(--tag-color);
+    position: relative;
+  }
+
+  .neuron-core::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--tag-color);
+    animation: pulse 2s infinite;
+    animation-delay: var(--anim-delay);
+  }
+
+  .neuron-name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .neuron-slug {
+    color: var(--text-tertiary);
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  .neuron-node:hover {
+    border-color: var(--tag-color);
+    box-shadow: 0 8px 24px -8px var(--tag-color);
+    transform: translateY(-5px) scale(1.05);
+    background: var(--bg-primary);
+    animation-play-state: paused;
+  }
+
+  .neuron-node:hover::before {
+    opacity: 0.15;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+</style>

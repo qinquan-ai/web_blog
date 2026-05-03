@@ -1,0 +1,169 @@
+---
+import Base from './Base.astro';
+import BackLink from '../components/BackLink.astro';
+import IconArrowLeft from '../components/icons/IconArrowLeft.astro';
+import { TAGS } from '../lib/config';
+import { formatDateFull } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  readingTime?: string;
+}
+
+const { title, description, pubDate, tags = [], readingTime = '5 min' } = Astro.props;
+
+const formattedDate = formatDateFull(pubDate);
+
+const tagData = tags
+  .map(t => TAGS.find(tag => tag.slug === t))
+  .filter(Boolean);
+---
+
+<Base title={title} description={description} type="article">
+  <article class="post-layout">
+    <div class="container">
+      <!-- Back link -->
+      <BackLink href="/blog" label="文章列表" />
+
+      <!-- Header -->
+      <header class="post-header">
+        <div class="post-tags">
+          {tagData.map(tag => (
+            <a href={`/tags/${tag!.slug}`} class="tag-chip">
+              {tag!.name}
+            </a>
+          ))}
+        </div>
+
+        <h1 class="post-title">{title}</h1>
+        <p class="post-description">{description}</p>
+
+        <div class="post-meta">
+          <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+          <span class="meta-sep">·</span>
+          <span>{readingTime}</span>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="post-content prose">
+        <slot />
+      </div>
+
+      <!-- Footer nav -->
+      <nav class="post-footer-nav">
+        <a href="/blog" class="back-btn">
+          <IconArrowLeft />
+          返回文章列表
+        </a>
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post-layout {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
+
+  /* back-link margin override for detail page */
+  .post-layout :global(.back-link) {
+    margin-bottom: var(--space-7);
+  }
+
+  .post-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .post-title {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: var(--space-4);
+  }
+
+  .post-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-5);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+  }
+  .meta-sep { opacity: 0.5; }
+
+  /* --- Prose styles (article content) --- */
+  .prose :global(h2) {
+    font-size: 1.5rem;
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .prose :global(h3) {
+    font-size: 1.25rem;
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-3);
+  }
+
+  .prose :global(h4) {
+    font-size: 1.0625rem;
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-2);
+    color: var(--text-secondary);
+  }
+
+  .prose :global(p) {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    margin-bottom: var(--space-5);
+  }
+
+  .prose :global(img) {
+    border-radius: var(--radius-lg);
+    margin: var(--space-6) auto;
+    box-shadow: var(--shadow-md);
+  }
+
+  .post-footer-nav {
+    margin-top: var(--space-9);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-light);
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: all var(--duration-fast);
+  }
+  .back-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--text-tertiary);
+    opacity: 1;
+  }
+</style>

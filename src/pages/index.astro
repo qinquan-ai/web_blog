@@ -1,0 +1,115 @@
+---
+import Base from "../layouts/Base.astro";
+import PostCard from "../components/PostCard.astro";
+import IconArrowRight from "../components/icons/IconArrowRight.astro";
+import { getCollection } from "astro:content";
+import { enrichPostsWithReadingTime } from "../lib/utils";
+
+const rawPosts = (await getCollection("blog"))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5);
+
+const posts = await enrichPostsWithReadingTime(rawPosts);
+---
+
+<Base>
+  <section class="home-hero">
+    <div class="container">
+      <div class="hero-content">
+        <p class="hero-description">
+          欢迎来到Qin blog，一个AI Coder的博客。记录真实的架构踩坑、AI
+          工具链搭建。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-posts">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">最新文章</h2>
+        <a href="/blog" class="section-more">
+          查看全部
+          <IconArrowRight />
+        </a>
+      </div>
+
+      <div class="posts-list">
+        {
+          posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              slug={post.slug}
+              readingTime={post.readingTime}
+            />
+          ))
+        }
+
+        {
+          posts.length === 0 && (
+            <div class="empty-state">
+              <p class="text-secondary">文章正在路上，即将抵达。</p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* --- Hero --- */
+  .home-hero {
+    padding: var(--space-9) 0 var(--space-8);
+  }
+
+  .hero-content {
+    max-width: 640px;
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+    max-width: 520px;
+  }
+
+  /* --- Posts --- */
+  .home-posts {
+    padding: var(--space-8) 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .section-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-fast);
+  }
+  .section-more:hover {
+    color: var(--text-primary);
+    opacity: 1;
+  }
+
+  .posts-list {
+    margin-top: var(--space-2);
+  }
+</style>

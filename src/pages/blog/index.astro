@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { enrichPostsWithReadingTime } from '../../lib/utils';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const posts = await enrichPostsWithReadingTime(allPosts);
+---
+
+<Base title="文章" description="所有技术文章 · AI · 架构 · 工具 · 踩坑">
+  <div class="blog-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">文章</h1>
+        <p class="page-desc text-secondary">
+          {allPosts.length} 篇文章，持续更新中
+        </p>
+      </header>
+
+      <div class="posts-list">
+        {posts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            slug={post.slug}
+            readingTime={post.readingTime}
+          />
+        ))}
+
+        {allPosts.length === 0 && (
+          <div class="empty-state">
+            <p class="text-secondary">文章正在路上，即将抵达。</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .blog-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+
+  /* page-header, page-title, page-desc now in global.css */
+
+  .posts-list { margin-top: var(--space-2); }
+</style>

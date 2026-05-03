@@ -1,0 +1,235 @@
+---
+import Base from '../layouts/Base.astro';
+import IconGitHub from '../components/icons/IconGitHub.astro';
+import IconArrowRight from '../components/icons/IconArrowRight.astro';
+import { PROJECT_GROUPS } from '../lib/projects';
+---
+
+<Base title="项目" description="我创建和维护的开源项目与工具">
+  <div class="projects-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">项目</h1>
+        <p class="page-desc text-secondary">
+          我创建和维护的项目，从工具库到全栈应用
+        </p>
+      </header>
+
+      {PROJECT_GROUPS.map((group) => (
+        <section class="project-group">
+          <div class="group-header">
+            <h2 class="group-title">{group.title}</h2>
+            {group.description && (
+              <p class="group-desc text-secondary">{group.description}</p>
+            )}
+          </div>
+
+          <div class="project-grid">
+            {group.projects.map((project) => (
+              <div class="project-card">
+                <div class="card-top">
+                  <div class="card-links">
+                    {project.github && (
+                      <a href={project.github} target="_blank" rel="noopener noreferrer" class="card-link" title="GitHub 仓库">
+                        <IconGitHub />
+                      </a>
+                    )}
+                    {project.link && (
+                      <a href={project.link} class="card-link" title="在线预览">
+                        <IconArrowRight size={16} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <h3 class="card-name">
+                  {project.name}
+                  {project.wip && <span class="wip-badge">WIP</span>}
+                </h3>
+                <p class="card-desc">{project.description}</p>
+
+                {project.tech && project.tech.length > 0 && (
+                  <div class="card-tech">
+                    {project.tech.map((t) => (
+                      <span class="tech-tag">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .projects-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
+
+  /* --- Group --- */
+  .project-group {
+    margin-bottom: var(--space-9);
+  }
+  .project-group:last-child { margin-bottom: 0; }
+
+  .group-header {
+    margin-bottom: var(--space-5);
+  }
+
+  .group-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-1);
+  }
+
+  .group-desc {
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  /* --- Grid --- */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* --- Card --- */
+  .project-card {
+    padding: var(--space-5);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--text-primary) 15%, transparent),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: var(--border);
+    transform: translateY(-4px);
+    box-shadow:
+      0 12px 40px -12px rgba(0, 0, 0, 0.08),
+      0 4px 12px -4px rgba(0, 0, 0, 0.04);
+  }
+
+  .project-card:hover::before {
+    opacity: 1;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: var(--space-4);
+  }
+
+  .card-links {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .card-link {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-light);
+    text-decoration: none;
+    transition: all var(--duration-fast);
+  }
+  .card-link:hover {
+    color: var(--text-primary);
+    border-color: var(--border);
+    background: var(--bg-secondary);
+  }
+
+  .card-name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .wip-badge {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .card-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    /* 限制行数 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tech-tag {
+    font-size: 0.6875rem;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--bg-primary) 85%, var(--text-primary)) 0%,
+      color-mix(in srgb, var(--bg-primary) 95%, var(--text-primary)) 50%,
+      color-mix(in srgb, var(--bg-primary) 88%, var(--text-primary)) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+  }
+
+  @media (max-width: 640px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

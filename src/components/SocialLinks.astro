@@ -1,0 +1,100 @@
+---
+/**
+ * SocialLinks — 社交链接组件（唯一真源）
+ * variant="icon"  → 仅图标，圆形按钮（Footer 用）
+ * variant="full"  → 图标 + 文字（About 用）
+ */
+import { SITE } from '../lib/config';
+import IconRSS from './icons/IconRSS.astro';
+import IconGitHub from './icons/IconGitHub.astro';
+import IconEmail from './icons/IconEmail.astro';
+import IconDouyin from './icons/IconDouyin.astro';
+import IconCSND from './icons/IconCSND.astro';
+
+interface Props {
+  variant?: 'icon' | 'full';
+  showRSS?: boolean;
+  class?: string;
+}
+
+const { variant = 'icon', showRSS = false, class: className = '' } = Astro.props;
+---
+
+<div class={`social-links social-links--${variant} ${className}`}>
+  {showRSS && (
+    <a href="/rss.xml" class="social-link" aria-label="RSS 订阅" title="RSS">
+      <IconRSS />
+      {variant === 'full' && <span>RSS</span>}
+    </a>
+  )}
+  {SITE.github && (
+    <a href={SITE.github} target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub">
+      <IconGitHub />
+      {variant === 'full' && <span>GitHub</span>}
+    </a>
+  )}
+  {SITE.google && (
+    <a href={SITE.google} class="social-link" title="Email">
+      <IconEmail />
+      {variant === 'full' && <span>邮箱 (Google)</span>}
+    </a>
+  )}
+  {SITE.douyin && (
+    <a href={SITE.douyin} target="_blank" rel="noopener noreferrer" class="social-link" title="抖音">
+      <IconDouyin />
+      {variant === 'full' && <span>抖音</span>}
+    </a>
+  )}
+  {SITE.csdn && (
+    <a href={SITE.csdn} target="_blank" rel="noopener noreferrer" class="social-link" title="CSDN">
+      <IconCSND />
+      {variant === 'full' && <span>CSDN</span>}
+    </a>
+  )}
+</div>
+
+<style>
+  .social-links {
+    display: flex;
+    align-items: center;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--duration-fast);
+  }
+  .social-link:hover {
+    color: var(--text-primary);
+    opacity: 1;
+  }
+
+  /* --- variant: icon（圆形小按钮） --- */
+  .social-links--icon {
+    gap: var(--space-2);
+  }
+  .social-links--icon .social-link {
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+  }
+  .social-links--icon .social-link:hover {
+    background: var(--border-light);
+  }
+
+  /* --- variant: full（图标 + 文字） --- */
+  .social-links--full {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+  .social-links--full .social-link {
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    padding: 6px 0;
+  }
+</style>
