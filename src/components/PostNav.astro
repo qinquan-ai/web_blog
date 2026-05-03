@@ -1,0 +1,76 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import IconArrowLeft from './icons/IconArrowLeft.astro';
+import IconArrowRight from './icons/IconArrowRight.astro';
+
+interface Props {
+  prev: CollectionEntry<'blog'> | null;
+  next: CollectionEntry<'blog'> | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+<nav class="post-nav">
+  <div class="nav-item prev">
+    {prev && (
+      <a href={`/blog/${prev.slug}`} class="nav-link">
+        <span class="nav-label">上一篇</span>
+        <span class="nav-title"><IconArrowLeft size={16} /> {prev.data.title}</span>
+      </a>
+    )}
+  </div>
+  <div class="nav-item next">
+    {next && (
+      <a href={`/blog/${next.slug}`} class="nav-link text-right">
+        <span class="nav-label">下一篇</span>
+        <span class="nav-title">{next.data.title} <IconArrowRight size={16} /></span>
+      </a>
+    )}
+  </div>
+</nav>
+
+<style>
+  .post-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+  }
+  .nav-item.next {
+    justify-content: flex-end;
+  }
+  .nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: color var(--duration-fast);
+    max-width: 100%;
+  }
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+  .nav-label {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .nav-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .text-right {
+    align-items: flex-end;
+    text-align: right;
+  }
+</style>

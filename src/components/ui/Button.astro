@@ -1,0 +1,183 @@
+---
+interface Props {
+  id?: string;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  [key: string]: any;
+}
+
+const { 
+  id,
+  href,
+  type = 'button', 
+  variant = 'primary', 
+  size = 'md', 
+  class: className = '',
+  disabled = false,
+  loading = false,
+  ...rest 
+} = Astro.props;
+
+const Element = href ? 'a' : 'button';
+
+const variants = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  ghost: 'btn-ghost',
+  outline: 'btn-outline',
+};
+
+const sizes = {
+  sm: 'btn-sm',
+  md: 'btn-md',
+  lg: 'btn-lg',
+};
+---
+
+<Element
+  id={id}
+  href={href}
+  type={href ? undefined : type}
+  class:list={['ui-button', variants[variant], sizes[size], className, { 'is-loading': loading }]}
+  disabled={disabled || loading}
+  {...rest}
+>
+  <span class="btn-content">
+    <slot name="icon-left" />
+    <slot />
+    <slot name="icon-right" />
+  </span>
+  
+  {loading && (
+    <span class="btn-loader">
+      <span class="spinner"></span>
+    </span>
+  )}
+</button>
+
+<style>
+  .ui-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    user-select: none;
+    outline: none;
+  }
+
+  .btn-content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: opacity 0.2s ease;
+  }
+
+  .is-loading .btn-content {
+    opacity: 0;
+  }
+
+  /* Variants */
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.1);
+  }
+
+  .btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    border-color: var(--text-tertiary);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--text-primary);
+    background: var(--bg-secondary);
+  }
+
+  /* Sizes */
+  .btn-sm {
+    padding: var(--space-1-5) var(--space-4);
+    font-size: 0.8125rem;
+  }
+
+  .btn-md {
+    padding: var(--space-2-5) var(--space-6);
+    font-size: 0.9375rem;
+  }
+
+  .btn-lg {
+    padding: var(--space-4) var(--space-10);
+    font-size: 1.0625rem;
+  }
+
+  /* Loading State */
+  .btn-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spinner {
+    width: 1.25em;
+    height: 1.25em;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.8s linear infinite;
+  }
+
+  @keyframes btn-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .ui-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+</style>

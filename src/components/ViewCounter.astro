@@ -1,0 +1,120 @@
+---
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<div class="view-counter" data-slug={slug}>
+  <span class="stat">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-eye"
+      ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle
+        cx="12"
+        cy="12"
+        r="3"></circle></svg
+    >
+    <span id={`pv-${slug}`}>--</span> 阅读
+  </span>
+  <span class="meta-sep">·</span>
+  <span class="stat">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-users"
+      ><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle
+        cx="9"
+        cy="7"
+        r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path
+        d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg
+    >
+    <span id={`uv-${slug}`}>--</span> 访客
+  </span>
+</div>
+
+<script>
+  import { supabase } from "../lib/supabase";
+
+  function getVisitorId() {
+    let vid = localStorage.getItem("blog_visitor_id");
+    if (!vid) {
+      vid = crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("blog_visitor_id", vid);
+    }
+    return vid;
+  }
+
+  async function trackVisit() {
+    const counterDiv = document.querySelector(".view-counter") as HTMLElement;
+    if (!counterDiv) return;
+
+    // 如果你想让统计数字仅自己可见，请取消下面 4 行代码的注释：
+    const isAdmin = localStorage.getItem("blog_admin") === "true";
+    if (!isAdmin) {
+      counterDiv.style.display = "none";
+    }
+
+    const slug = counterDiv.dataset.slug;
+    if (!slug || !import.meta.env.PUBLIC_SUPABASE_URL) return;
+
+    try {
+      const { data, error } = await supabase.rpc("track_visit", {
+        p_slug: slug,
+        p_visitor_id: getVisitorId(),
+      });
+
+      if (!error && data && data.length > 0) {
+        const pvEl = document.getElementById(`pv-${slug}`);
+        const uvEl = document.getElementById(`uv-${slug}`);
+        if (pvEl) pvEl.innerText = data[0].pv.toString();
+        if (uvEl) uvEl.innerText = data[0].uv.toString();
+      }
+    } catch (e) {
+      console.error("统计阅读量异常:", e);
+    }
+  }
+
+  document.addEventListener("astro:page-load", trackVisit);
+  if (document.readyState !== "loading") {
+    trackVisit();
+  }
+</script>
+
+<style>
+  .view-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3, 12px);
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+  }
+
+  .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat svg {
+    opacity: 0.7;
+  }
+</style>
