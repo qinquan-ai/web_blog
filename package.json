@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist && xcopy /E /I /Y dist\\pagefind public\\pagefind 2>nul & echo done",
+    "build": "astro build && pagefind --site dist && node scripts/copy-pagefind.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
