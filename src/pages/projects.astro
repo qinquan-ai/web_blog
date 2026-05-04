@@ -1,11 +1,11 @@
 ---
-import Base from '../layouts/Base.astro';
-import IconGitHub from '../components/icons/IconGitHub.astro';
-import IconStar from '../components/icons/IconStar.astro';
-import IconArrowRight from '../components/icons/IconArrowRight.astro';
-import { fetchGitHubProjects, PROJECT_GROUPS } from '../lib/projects';
+import Base from "../layouts/Base.astro";
+import IconGitHub from "../components/icons/IconGitHub.astro";
+import IconStar from "../components/icons/IconStar.astro";
+import IconArrowRight from "../components/icons/IconArrowRight.astro";
+import { fetchGitHubProjects, PROJECT_GROUPS } from "../lib/projects";
 
-const group = await fetchGitHubProjects('qinquan-ai');
+const group = await fetchGitHubProjects("qinquan-ai");
 const allGroups = group.projects.length > 0 ? [group] : PROJECT_GROUPS;
 ---
 
@@ -19,57 +19,74 @@ const allGroups = group.projects.length > 0 ? [group] : PROJECT_GROUPS;
         </p>
       </header>
 
-      {allGroups.map((group) => (
-        <section class="project-group">
-          <div class="group-header">
-            <h2 class="group-title">{group.title}</h2>
-            {group.description && (
-              <p class="group-desc text-secondary">{group.description}</p>
-            )}
-          </div>
+      {
+        allGroups.map(group => (
+          <section class="project-group">
+            <div class="group-header">
+              <h2 class="group-title">{group.title}</h2>
+              {group.description && (
+                <p class="group-desc text-secondary">{group.description}</p>
+              )}
+            </div>
 
-          <div class="project-grid">
-            {group.projects.map((project) => (
-              <div class="project-card">
-                <div class="card-top">
-                  <div class="card-links">
-                    {project.github && (
-                      <a href={project.github} target="_blank" rel="noopener noreferrer" class="card-link" title="GitHub 仓库">
-                        <IconGitHub />
-                      </a>
-                    )}
-                    {project.link && (
-                      <a href={project.link} class="card-link" title="在线预览">
-                        <IconArrowRight size={16} />
-                      </a>
+            <div class="project-grid">
+              {group.projects.map(project => (
+                <div class="project-card">
+                  <div class="card-top">
+                    <div class="card-links">
+                      {project.github && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="card-link"
+                          title="GitHub 仓库"
+                        >
+                          <IconGitHub />
+                        </a>
+                      )}
+                      {project.link && (
+                        <a
+                          href={project.link}
+                          class="card-link"
+                          title="在线预览"
+                        >
+                          <IconArrowRight size={16} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <h3 class="card-name">
+                    {project.name}
+                    {project.wip && <span class="wip-badge">WIP</span>}
+                  </h3>
+                  <p class="card-desc">{project.description}</p>
+
+                  <div class="card-meta">
+                    <div class="card-tech">
+                      {project.tech &&
+                        project.tech.length > 0 &&
+                        project.tech.map(t => (
+                          <span class="tech-tag">{t}</span>
+                        ))}
+                    </div>
+                    {project.stars >= 0 && (
+                      <span
+                        class="card-stars"
+                        title={`${project.stars} stars on GitHub`}
+                      >
+                        <IconStar size={12} />
+                        {project.stars}
+                      </span>
                     )}
                   </div>
                 </div>
-
-                <h3 class="card-name">
-                  {project.name}
-                  {project.wip && <span class="wip-badge">WIP</span>}
-                </h3>
-                <p class="card-desc">{project.description}</p>
-
-                <div class="card-meta">
-                  <div class="card-tech">
-                    {project.tech && project.tech.length > 0 && project.tech.map((t) => (
-                      <span class="tech-tag">{t}</span>
-                    ))}
-                  </div>
-                  {project.stars >= 0 && (
-                    <span class="card-stars" title={`${project.stars} stars on GitHub`}>
-                      <IconStar size={12} />
-                      {project.stars}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
+              ))}
+            </div>
+          </section>
+        ))
+      }
     </div>
   </div>
 </Base>
@@ -84,7 +101,9 @@ const allGroups = group.projects.length > 0 ? [group] : PROJECT_GROUPS;
   .project-group {
     margin-bottom: var(--space-9);
   }
-  .project-group:last-child { margin-bottom: 0; }
+  .project-group:last-child {
+    margin-bottom: 0;
+  }
 
   .group-header {
     margin-bottom: var(--space-5);
@@ -123,7 +142,7 @@ const allGroups = group.projects.length > 0 ? [group] : PROJECT_GROUPS;
   }
 
   .project-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;

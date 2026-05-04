@@ -1,15 +1,16 @@
 ---
-import PostLayout from '../../layouts/PostLayout.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
-import type { GetStaticPaths } from 'astro';
+import PostLayout from "../../layouts/PostLayout.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = (await getCollection('blog'))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  
+  const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
   return posts.map((post, i) => ({
     params: { slug: post.slug },
-    props: { 
+    props: {
       post,
       prevPost: i + 1 < posts.length ? posts[i + 1] : null,
       nextPost: i - 1 >= 0 ? posts[i - 1] : null,
@@ -18,14 +19,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 interface Props {
-  post: CollectionEntry<'blog'>;
-  prevPost: CollectionEntry<'blog'> | null;
-  nextPost: CollectionEntry<'blog'> | null;
+  post: CollectionEntry<"blog">;
+  prevPost: CollectionEntry<"blog"> | null;
+  nextPost: CollectionEntry<"blog"> | null;
 }
 
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, remarkPluginFrontmatter, headings } = await post.render();
-const readingTime = remarkPluginFrontmatter.readingTime || post.data.readingTime || '5 min';
+const readingTime =
+  remarkPluginFrontmatter.readingTime || post.data.readingTime || "5 min";
 const ogImage = `${Astro.site}blog/${post.slug}/index.png`;
 ---
 

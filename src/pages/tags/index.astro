@@ -1,6 +1,6 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { TAGS } from '../../lib/config';
+import Base from "../../layouts/Base.astro";
+import { TAGS } from "../../lib/config";
 ---
 
 <Base title="标签" description="按标签浏览所有文章">
@@ -14,22 +14,31 @@ import { TAGS } from '../../lib/config';
       </header>
 
       <div class="neuron-network">
-        {TAGS.map((tag, index) => (
-          <a href={`/tags/${tag.slug}`} class="neuron-node" style={`--tag-color: ${tag.color}; --anim-delay: -${index * 0.7}s;`}>
-            <div class="neuron-content">
-              <div class="neuron-core"></div>
-              <span class="neuron-name">{tag.name}</span>
-              <span class="neuron-slug text-xs font-mono">#{tag.slug}</span>
-            </div>
-          </a>
-        ))}
+        {
+          TAGS.map((tag, index) => (
+            <a
+              href={`/tags/${tag.slug}`}
+              class="neuron-node"
+              style={`--tag-color: ${tag.color}; --anim-delay: -${index * 0.7}s;`}
+            >
+              <div class="neuron-content">
+                <div class="neuron-core" />
+                <span class="neuron-name">{tag.name}</span>
+                <span class="neuron-slug text-xs font-mono">#{tag.slug}</span>
+              </div>
+            </a>
+          ))
+        }
       </div>
     </div>
   </div>
 </Base>
 
 <style>
-  .tags-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .tags-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
 
   /* page-header, page-title, page-desc now in global.css */
 
@@ -57,13 +66,18 @@ import { TAGS } from '../../lib/config';
   }
 
   .neuron-node::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: -20px;
     right: -20px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--tag-color), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--tag-color),
+      transparent
+    );
     opacity: 0;
     transition: opacity 0.4s;
     z-index: 0;
@@ -87,9 +101,12 @@ import { TAGS } from '../../lib/config';
   }
 
   .neuron-core::after {
-    content: '';
+    content: "";
     position: absolute;
-    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
     border-radius: 50%;
     border: 1px solid var(--tag-color);
     animation: pulse 2s infinite;
@@ -120,12 +137,23 @@ import { TAGS } from '../../lib/config';
   }
 
   @keyframes pulse {
-    0% { transform: scale(0.8); opacity: 0.8; }
-    100% { transform: scale(2.2); opacity: 0; }
+    0% {
+      transform: scale(0.8);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
   }
 </style>

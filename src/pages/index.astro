@@ -35,7 +35,7 @@ const posts = await enrichPostsWithReadingTime(rawPosts);
 
       <div class="posts-list">
         {
-          posts.map((post) => (
+          posts.map(post => (
             <PostCard
               title={post.data.title}
               description={post.data.description}

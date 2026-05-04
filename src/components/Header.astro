@@ -1,8 +1,8 @@
 ---
-import { SITE } from '../lib/config';
-import IconSearch from './icons/IconSearch.astro';
-import IconSun from './icons/IconSun.astro';
-import IconMoon from './icons/IconMoon.astro';
+import { SITE } from "../lib/config";
+import IconSearch from "./icons/IconSearch.astro";
+import IconSun from "./icons/IconSun.astro";
+import IconMoon from "./icons/IconMoon.astro";
 ---
 
 <header class="site-header">
@@ -20,10 +20,19 @@ import IconMoon from './icons/IconMoon.astro';
       </nav>
 
       <div class="header-actions">
-        <a href="/search" class="action-btn search-nav-btn" aria-label="搜索" title="搜索文章">
+        <a
+          href="/search"
+          class="action-btn search-nav-btn"
+          aria-label="搜索"
+          title="搜索文章"
+        >
           <IconSearch />
         </a>
-        <button class="theme-toggle action-btn" aria-label="切换主题" id="theme-toggle">
+        <button
+          class="theme-toggle action-btn"
+          aria-label="切换主题"
+          id="theme-toggle"
+        >
           <span class="icon-sun"><IconSun /></span>
           <span class="icon-moon"><IconMoon /></span>
         </button>
@@ -33,12 +42,12 @@ import IconMoon from './icons/IconMoon.astro';
 </header>
 
 <script>
-  const btn = document.getElementById('theme-toggle');
-  btn?.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
+  const btn = document.getElementById("theme-toggle");
+  btn?.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
   });
 </script>
 
@@ -69,7 +78,9 @@ import IconMoon from './icons/IconMoon.astro';
     text-decoration: none;
     transition: opacity var(--duration-fast);
   }
-  .logo:hover { opacity: 0.7; }
+  .logo:hover {
+    opacity: 0.7;
+  }
 
   .logo-mark {
     width: 32px;
@@ -117,7 +128,7 @@ import IconMoon from './icons/IconMoon.astro';
     opacity: 1;
   }
   .nav-link::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -2px;
     left: 0;
@@ -127,9 +138,15 @@ import IconMoon from './icons/IconMoon.astro';
     transform: scaleX(0);
     transition: transform var(--duration-normal) var(--ease-out);
   }
-  .nav-link:hover::after { transform: scaleX(1); }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
 
-  .header-actions { display: flex; align-items: center; gap: var(--space-3); }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
 
   .action-btn {
     width: 36px;
@@ -150,8 +167,16 @@ import IconMoon from './icons/IconMoon.astro';
     transform: scale(1.05);
   }
 
-  .icon-sun { display: none; }
-  .icon-moon { display: block; }
-  :global([data-theme="dark"]) .icon-sun { display: block; }
-  :global([data-theme="dark"]) .icon-moon { display: none; }
+  .icon-sun {
+    display: none;
+  }
+  .icon-moon {
+    display: block;
+  }
+  :global([data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  :global([data-theme="dark"]) .icon-moon {
+    display: none;
+  }
 </style>

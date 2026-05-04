@@ -30,21 +30,24 @@ interface GitHubRepo {
   stargazers_count: number;
 }
 
-export async function fetchGitHubProjects(username: string): Promise<ProjectGroup> {
+export async function fetchGitHubProjects(
+  username: string
+): Promise<ProjectGroup> {
   try {
     const res = await fetch(
       `https://api.github.com/users/${username}/repos?sort=updated&per_page=20&type=owner`,
       {
         headers: {
-          Accept: 'application/vnd.github+json',
-          'User-Agent': 'qin-blog',
+          Accept: "application/vnd.github+json",
+          "User-Agent": "qin-blog",
         },
       }
     );
 
     if (!res.ok) {
+      // eslint-disable-next-line no-console
       console.warn(`GitHub API error: ${res.status}`);
-      return { title: '开源项目', projects: [] };
+      return { title: "开源项目", projects: [] };
     }
 
     const repos: GitHubRepo[] = await res.json();
@@ -54,7 +57,7 @@ export async function fetchGitHubProjects(username: string): Promise<ProjectGrou
       .slice(0, 12)
       .map(repo => ({
         name: repo.name,
-        description: repo.description || '',
+        description: repo.description || "",
         github: repo.html_url,
         link: repo.homepage || undefined,
         tech: repo.topics.slice(0, 4),
@@ -62,12 +65,12 @@ export async function fetchGitHubProjects(username: string): Promise<ProjectGrou
         wip: false,
       }));
 
-    return { title: '开源项目', projects };
+    return { title: "开源项目", projects };
   } catch (e) {
-    console.warn('Failed to fetch GitHub projects:', e);
-    return { title: '开源项目', projects: [] };
+    // eslint-disable-next-line no-console
+    console.warn("Failed to fetch GitHub projects:", e);
+    return { title: "开源项目", projects: [] };
   }
 }
 
 export const PROJECT_GROUPS: ProjectGroup[] = [];
-

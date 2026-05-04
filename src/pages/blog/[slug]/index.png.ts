@@ -1,9 +1,9 @@
-import type { APIRoute, GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
-import { generatePostOgImage } from '../../../utils/og-templates';
+import type { APIRoute, GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import { generatePostOgImage } from "../../../utils/og-templates";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await getCollection('blog');
+  const posts = await getCollection("blog");
   return posts.map(post => ({
     params: { slug: post.slug },
     props: {
@@ -14,9 +14,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const GET: APIRoute = async ({ props }) => {
-  const { title, description } = props as { title: string; description: string };
+  const { title, description } = props as {
+    title: string;
+    description: string;
+  };
   const buffer = await generatePostOgImage(title, description);
   return new Response(new Uint8Array(buffer), {
-    headers: { 'Content-Type': 'image/png' },
+    headers: { "Content-Type": "image/png" },
   });
 };

@@ -1,7 +1,7 @@
 ---
-import Base from '../layouts/Base.astro';
-import SocialLinks from '../components/SocialLinks.astro';
-import { SITE } from '../lib/config';
+import Base from "../layouts/Base.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { SITE } from "../lib/config";
 ---
 
 <Base title="关于" description="关于 Qin — 独立AI实践者的技术笔记本">
@@ -28,9 +28,7 @@ import { SITE } from '../lib/config';
             <p>
               内容来自实际工作，会写AI实践、架构踩坑、偶尔也有非AI的技术内容。
             </p>
-            <p>
-              如果某篇对你有用，就是我最大的满足。
-            </p>
+            <p>如果某篇对你有用，就是我最大的满足。</p>
           </section>
 
           <section class="about-section">
@@ -65,8 +63,6 @@ import { SITE } from '../lib/config';
               </div>
             </div>
           </section>
-
-
         </div>
       </div>
     </div>
@@ -74,7 +70,10 @@ import { SITE } from '../lib/config';
 </Base>
 
 <style>
-  .about-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .about-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
 
   .about-grid {
     display: grid;
@@ -84,9 +83,14 @@ import { SITE } from '../lib/config';
   }
 
   /* --- Identity --- */
-  .about-identity { position: sticky; top: 80px; }
+  .about-identity {
+    position: sticky;
+    top: 80px;
+  }
 
-  .avatar-wrap { margin-bottom: var(--space-4); }
+  .avatar-wrap {
+    margin-bottom: var(--space-4);
+  }
 
   .avatar {
     width: 72px;
@@ -108,11 +112,18 @@ import { SITE } from '../lib/config';
     margin-bottom: var(--space-2);
   }
 
-  .about-tagline { font-size: 0.9375rem; margin-bottom: var(--space-5); }
+  .about-tagline {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-5);
+  }
 
   /* --- Content --- */
-  .about-section { margin-bottom: var(--space-7); }
-  .about-section:last-child { margin-bottom: 0; }
+  .about-section {
+    margin-bottom: var(--space-7);
+  }
+  .about-section:last-child {
+    margin-bottom: 0;
+  }
 
   .about-section h2 {
     font-size: 1.0625rem;
@@ -129,7 +140,11 @@ import { SITE } from '../lib/config';
   }
 
   /* --- Skills --- */
-  .skill-grid { display: flex; flex-direction: column; gap: var(--space-4); }
+  .skill-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
 
   .skill-group-title {
     font-size: 0.75rem;
@@ -140,7 +155,11 @@ import { SITE } from '../lib/config';
     margin-bottom: var(--space-2);
   }
 
-  .skill-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
 
   .skill-tag {
     font-size: 0.8125rem;
@@ -152,13 +171,13 @@ import { SITE } from '../lib/config';
     color: var(--text-secondary);
   }
 
-
-
   @media (max-width: 768px) {
     .about-grid {
       grid-template-columns: 1fr;
       gap: var(--space-7);
     }
-    .about-identity { position: static; }
+    .about-identity {
+      position: static;
+    }
   }
 </style>

@@ -1,31 +1,35 @@
 <script>
   function initCodeCopy() {
-    const blocks = document.querySelectorAll('pre');
-    blocks.forEach((block) => {
-      if (block.parentNode && !(block.parentNode as HTMLElement).classList.contains('code-wrapper')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'code-wrapper';
+    const blocks = document.querySelectorAll("pre");
+    blocks.forEach(block => {
+      if (
+        block.parentNode &&
+        !(block.parentNode as HTMLElement).classList.contains("code-wrapper")
+      ) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "code-wrapper";
         block.parentNode.insertBefore(wrapper, block);
         wrapper.appendChild(block);
 
-        const button = document.createElement('button');
-        button.className = 'code-copy-btn';
-        button.setAttribute('aria-label', '复制代码');
-        button.textContent = '复制';
+        const button = document.createElement("button");
+        button.className = "code-copy-btn";
+        button.setAttribute("aria-label", "复制代码");
+        button.textContent = "复制";
 
-        button.addEventListener('click', async () => {
-          const code = block.querySelector('code');
+        button.addEventListener("click", async () => {
+          const code = block.querySelector("code");
           if (code) {
             try {
               await navigator.clipboard.writeText(code.innerText);
-              button.textContent = '已复制';
-              button.classList.add('is-copied');
+              button.textContent = "已复制";
+              button.classList.add("is-copied");
               setTimeout(() => {
-                button.textContent = '复制';
-                button.classList.remove('is-copied');
+                button.textContent = "复制";
+                button.classList.remove("is-copied");
               }, 2000);
             } catch (err) {
-              console.error('Failed to copy', err);
+              // eslint-disable-next-line no-console
+              console.error("Failed to copy", err);
             }
           }
         });
@@ -35,8 +39,8 @@
     });
   }
 
-  document.addEventListener('astro:page-load', initCodeCopy);
-  if (document.readyState !== 'loading') initCodeCopy();
+  document.addEventListener("astro:page-load", initCodeCopy);
+  if (document.readyState !== "loading") initCodeCopy();
 </script>
 
 <style>

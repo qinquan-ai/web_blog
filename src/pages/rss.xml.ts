@@ -1,11 +1,12 @@
-import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
-import { SITE } from '../lib/config';
-import type { APIContext } from 'astro';
+import rss from "@astrojs/rss";
+import { getCollection } from "astro:content";
+import { SITE } from "../lib/config";
+import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
-  const posts = (await getCollection('blog'))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
 
   return rss({
     title: SITE.title,
@@ -17,6 +18,6 @@ export async function GET(context: APIContext) {
       description: post.data.description,
       link: `/blog/${post.slug}/`,
     })),
-    customData: '<language>zh-cn</language>',
+    customData: "<language>zh-cn</language>",
   });
 }

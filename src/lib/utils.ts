@@ -2,17 +2,17 @@
  * 工具函数
  */
 
-import type { CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
 
 /**
  * 格式化日期为中文显示（列表页用）
  * 输出示例：2026/05/02
  */
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   });
 }
 
@@ -21,10 +21,10 @@ export function formatDate(date: Date): string {
  * 输出示例：2026年5月2日
  */
 export function formatDateFull(date: Date): string {
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  return date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
@@ -40,14 +40,17 @@ export function getCanonicalUrl(path: string, baseUrl: string): string {
  * 用法：const posts = await enrichPostsWithReadingTime(rawPosts);
  */
 export async function enrichPostsWithReadingTime(
-  posts: CollectionEntry<'blog'>[]
+  posts: CollectionEntry<"blog">[]
 ) {
   return Promise.all(
-    posts.map(async (post) => {
+    posts.map(async post => {
       const { remarkPluginFrontmatter } = await post.render();
       return {
         ...post,
-        readingTime: (remarkPluginFrontmatter.readingTime as string) || post.data.readingTime || '5 min',
+        readingTime:
+          (remarkPluginFrontmatter.readingTime as string) ||
+          post.data.readingTime ||
+          "5 min",
       };
     })
   );

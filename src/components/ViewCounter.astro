@@ -89,6 +89,7 @@ const { slug } = Astro.props;
         if (uvEl) uvEl.innerText = data[0].uv.toString();
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("统计阅读量异常:", e);
     }
   }

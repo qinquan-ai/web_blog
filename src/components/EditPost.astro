@@ -1,10 +1,10 @@
 ---
-import IconEdit from './icons/IconEdit.astro';
-import { SITE } from '../lib/config';
-import type { CollectionEntry } from 'astro:content';
+import IconEdit from "./icons/IconEdit.astro";
+import { SITE } from "../lib/config";
+import type { CollectionEntry } from "astro:content";
 
 interface Props {
-  post: CollectionEntry<'blog'>;
+  post: CollectionEntry<"blog">;
   class?: string;
 }
 
@@ -15,17 +15,19 @@ if (!SITE.editPost?.enabled) {
 }
 ---
 
-{SITE.editPost?.enabled && (
-  <a
-    href={`${SITE.editPost.url}src/content/blog/${post.id.replace(/\.(md|mdx)$/, '')}.mdx`}
-    class:list={['edit-post-link', className]}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <IconEdit />
-    {SITE.editPost.text}
-  </a>
-)}
+{
+  SITE.editPost?.enabled && (
+    <a
+      href={`${SITE.editPost.url}src/content/blog/${post.id.replace(/\.(md|mdx)$/, "")}.mdx`}
+      class:list={["edit-post-link", className]}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <IconEdit />
+      {SITE.editPost.text}
+    </a>
+  )
+}
 
 <style>
   .edit-post-link {

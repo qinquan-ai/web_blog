@@ -2,40 +2,40 @@
 interface Props {
   id?: string;
   href?: string;
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  type?: "button" | "submit" | "reset";
+  variant?: "primary" | "secondary" | "ghost" | "outline";
+  size?: "sm" | "md" | "lg";
   class?: string;
   disabled?: boolean;
   loading?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-const { 
+const {
   id,
   href,
-  type = 'button', 
-  variant = 'primary', 
-  size = 'md', 
-  class: className = '',
+  type = "button",
+  variant = "primary",
+  size = "md",
+  class: className = "",
   disabled = false,
   loading = false,
-  ...rest 
+  ...rest
 } = Astro.props;
 
-const Element = href ? 'a' : 'button';
+const Element = href ? "a" : "button";
 
 const variants = {
-  primary: 'btn-primary',
-  secondary: 'btn-secondary',
-  ghost: 'btn-ghost',
-  outline: 'btn-outline',
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  ghost: "btn-ghost",
+  outline: "btn-outline",
 };
 
 const sizes = {
-  sm: 'btn-sm',
-  md: 'btn-md',
-  lg: 'btn-lg',
+  sm: "btn-sm",
+  md: "btn-md",
+  lg: "btn-lg",
 };
 ---
 
@@ -43,7 +43,13 @@ const sizes = {
   id={id}
   href={href}
   type={href ? undefined : type}
-  class:list={['ui-button', variants[variant], sizes[size], className, { 'is-loading': loading }]}
+  class:list={[
+    "ui-button",
+    variants[variant],
+    sizes[size],
+    className,
+    { "is-loading": loading },
+  ]}
   disabled={disabled || loading}
   {...rest}
 >
@@ -52,12 +58,14 @@ const sizes = {
     <slot />
     <slot name="icon-right" />
   </span>
-  
-  {loading && (
-    <span class="btn-loader">
-      <span class="spinner"></span>
-    </span>
-  )}
+
+  {
+    loading && (
+      <span class="btn-loader">
+        <span class="spinner" />
+      </span>
+    )
+  }
 </Element>
 
 <style>
@@ -171,7 +179,9 @@ const sizes = {
   }
 
   @keyframes btn-spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .ui-button:disabled {

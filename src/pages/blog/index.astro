@@ -1,14 +1,21 @@
 ---
-import Base from '../../layouts/Base.astro';
-import PostCard from '../../components/PostCard.astro';
-import { getCollection } from 'astro:content';
-import { enrichPostsWithReadingTime } from '../../lib/utils';
+import Base from "../../layouts/Base.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+import { enrichPostsWithReadingTime } from "../../lib/utils";
 
-const allPosts = (await getCollection('blog')).sort(
+export const prerender = true;
+
+const page = Number(Astro.url.searchParams.get("page") ?? "1");
+const PAGE_SIZE = 10;
+
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-
-const posts = await enrichPostsWithReadingTime(allPosts);
+const total = allPosts.length;
+const paginated = allPosts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+const totalPages = Math.ceil(total / PAGE_SIZE);
+const posts = await enrichPostsWithReadingTime(paginated);
 ---
 
 <Base title="文章" description="所有技术文章 · AI · 架构 · 工具 · 踩坑">
@@ -17,36 +24,101 @@ const posts = await enrichPostsWithReadingTime(allPosts);
       <header class="page-header">
         <h1 class="page-title">文章</h1>
         <p class="page-desc text-secondary">
-          {allPosts.length} 篇文章，持续更新中
+          {total} 篇文章，持续更新中
         </p>
       </header>
 
       <div class="posts-list">
-        {posts.map(post => (
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            tags={post.data.tags}
-            slug={post.slug}
-            readingTime={post.readingTime}
-          />
-        ))}
+        {
+          posts.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              slug={post.slug}
+              readingTime={post.readingTime}
+            />
+          ))
+        }
 
-        {allPosts.length === 0 && (
-          <div class="empty-state">
-            <p class="text-secondary">文章正在路上，即将抵达。</p>
-          </div>
-        )}
+        {
+          total === 0 && (
+            <div class="empty-state">
+              <p class="text-secondary">文章正在路上，即将抵达。</p>
+            </div>
+          )
+        }
       </div>
+
+      {
+        totalPages > 1 && (
+          <nav class="pagination" aria-label="分页">
+            {page > 1 && (
+              <a href={`?page=${page - 1}`} class="pagination-btn">
+                上一页
+              </a>
+            )}
+            <span class="pagination-info">
+              {page} / {totalPages}
+            </span>
+            {page < totalPages && (
+              <a href={`?page=${page + 1}`} class="pagination-btn">
+                下一页
+              </a>
+            )}
+          </nav>
+        )
+      }
     </div>
   </div>
 </Base>
 
 <style>
-  .blog-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .blog-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
 
   /* page-header, page-title, page-desc now in global.css */
 
-  .posts-list { margin-top: var(--space-2); }
+  .posts-list {
+    margin-top: var(--space-2);
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-light);
+  }
+
+  .pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    transition: all var(--duration-fast);
+  }
+
+  .pagination-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+    background: var(--bg-primary);
+  }
+
+  .pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    min-width: 60px;
+    text-align: center;
+  }
 </style>

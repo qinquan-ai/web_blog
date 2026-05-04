@@ -1,11 +1,11 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import IconArrowLeft from './icons/IconArrowLeft.astro';
-import IconArrowRight from './icons/IconArrowRight.astro';
+import type { CollectionEntry } from "astro:content";
+import IconArrowLeft from "./icons/IconArrowLeft.astro";
+import IconArrowRight from "./icons/IconArrowRight.astro";
 
 interface Props {
-  prev: CollectionEntry<'blog'> | null;
-  next: CollectionEntry<'blog'> | null;
+  prev: CollectionEntry<"blog"> | null;
+  next: CollectionEntry<"blog"> | null;
 }
 
 const { prev, next } = Astro.props;
@@ -13,20 +13,28 @@ const { prev, next } = Astro.props;
 
 <nav class="post-nav">
   <div class="nav-item prev">
-    {prev && (
-      <a href={`/blog/${prev.slug}`} class="nav-link">
-        <span class="nav-label">上一篇</span>
-        <span class="nav-title"><IconArrowLeft size={16} /> {prev.data.title}</span>
-      </a>
-    )}
+    {
+      prev && (
+        <a href={`/blog/${prev.slug}`} class="nav-link">
+          <span class="nav-label">上一篇</span>
+          <span class="nav-title">
+            <IconArrowLeft size={16} /> {prev.data.title}
+          </span>
+        </a>
+      )
+    }
   </div>
   <div class="nav-item next">
-    {next && (
-      <a href={`/blog/${next.slug}`} class="nav-link text-right">
-        <span class="nav-label">下一篇</span>
-        <span class="nav-title">{next.data.title} <IconArrowRight size={16} /></span>
-      </a>
-    )}
+    {
+      next && (
+        <a href={`/blog/${next.slug}`} class="nav-link text-right">
+          <span class="nav-label">下一篇</span>
+          <span class="nav-title">
+            {next.data.title} <IconArrowRight size={16} />
+          </span>
+        </a>
+      )
+    }
   </div>
 </nav>
 

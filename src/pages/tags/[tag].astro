@@ -1,13 +1,13 @@
 ---
-import Base from '../../layouts/Base.astro';
-import PostCard from '../../components/PostCard.astro';
-import BackLink from '../../components/BackLink.astro';
-import { getCollection } from 'astro:content';
-import { TAGS } from '../../lib/config';
-import { enrichPostsWithReadingTime } from '../../lib/utils';
+import Base from "../../layouts/Base.astro";
+import PostCard from "../../components/PostCard.astro";
+import BackLink from "../../components/BackLink.astro";
+import { getCollection } from "astro:content";
+import { TAGS } from "../../lib/config";
+import { enrichPostsWithReadingTime } from "../../lib/utils";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection("blog");
   return TAGS.map(tag => ({
     params: { tag: tag.slug },
     props: {
@@ -42,29 +42,36 @@ const enrichedPosts = await enrichPostsWithReadingTime(posts);
       </header>
 
       <div class="posts-list">
-        {enrichedPosts.map(post => (
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            tags={post.data.tags}
-            slug={post.slug}
-            readingTime={post.readingTime}
-          />
-        ))}
+        {
+          enrichedPosts.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              slug={post.slug}
+              readingTime={post.readingTime}
+            />
+          ))
+        }
 
-        {posts.length === 0 && (
-          <div class="empty-state">
-            <p class="text-secondary">该标签下暂无文章。</p>
-          </div>
-        )}
+        {
+          posts.length === 0 && (
+            <div class="empty-state">
+              <p class="text-secondary">该标签下暂无文章。</p>
+            </div>
+          )
+        }
       </div>
     </div>
   </div>
 </Base>
 
 <style>
-  .tag-page { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .tag-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
 
   /* page-header, page-desc now in global.css */
 
@@ -88,5 +95,7 @@ const enrichedPosts = await enrichPostsWithReadingTime(posts);
     color: var(--tag-color);
   }
 
-  .posts-list { margin-top: var(--space-2); }
+  .posts-list {
+    margin-top: var(--space-2);
+  }
 </style>

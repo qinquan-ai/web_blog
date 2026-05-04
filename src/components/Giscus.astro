@@ -1,61 +1,71 @@
 ---
-import Button from './ui/Button.astro';
-import IconMessage from './icons/IconMessage.astro';
+import Button from "./ui/Button.astro";
+import IconMessage from "./icons/IconMessage.astro";
 ---
 
 <section class="comments-section">
   <div id="comments-loader" class="comments-loader">
-    <Button id="load-comments-btn" variant="secondary" size="lg" class="capsule-btn">
+    <Button
+      id="load-comments-btn"
+      variant="secondary"
+      size="lg"
+      class="capsule-btn"
+    >
       <IconMessage slot="icon-left" size={20} />
       加载评论
     </Button>
   </div>
-  
+
   <div id="comments-container" class="comments-container hidden"></div>
 </section>
 
 <script is:inline>
   function initGiscusLoading() {
-    const btn = document.getElementById('load-comments-btn');
+    const btn = document.getElementById("load-comments-btn");
     if (!btn) return;
 
-    btn.onclick = function() {
-      const container = document.getElementById('comments-container');
-      const loader = document.getElementById('comments-loader');
-      
+    btn.onclick = function () {
+      const container = document.getElementById("comments-container");
+      const loader = document.getElementById("comments-loader");
+
       if (!container || !loader) return;
 
       // 使用组件内置的 Loading 状态模拟
-      btn.classList.add('is-loading');
+      btn.classList.add("is-loading");
       btn.disabled = true;
 
-      const script = document.createElement('script');
-      script.src = 'https://giscus.app/client.js';
-      script.setAttribute('data-repo', 'qinquan-ai/web_blog');
-      script.setAttribute('data-repo-id', 'R_kgDOSSMYPw');
-      script.setAttribute('data-category', 'Announcements');
-      script.setAttribute('data-category-id', 'DIC_kwDOSSMYP84C8O0V');
-      script.setAttribute('data-mapping', 'pathname');
-      script.setAttribute('data-strict', '0');
-      script.setAttribute('data-reactions-enabled', '1');
-      script.setAttribute('data-emit-metadata', '0');
-      script.setAttribute('data-input-position', 'bottom');
-      script.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
-      script.setAttribute('data-lang', 'zh-CN');
-      script.setAttribute('data-loading', 'lazy');
-      script.crossOrigin = 'anonymous';
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", "qinquan-ai/web_blog");
+      script.setAttribute("data-repo-id", "R_kgDOSSMYPw");
+      script.setAttribute("data-category", "Announcements");
+      script.setAttribute("data-category-id", "DIC_kwDOSSMYP84C8O0V");
+      script.setAttribute("data-mapping", "pathname");
+      script.setAttribute("data-strict", "0");
+      script.setAttribute("data-reactions-enabled", "1");
+      script.setAttribute("data-emit-metadata", "0");
+      script.setAttribute("data-input-position", "bottom");
+      script.setAttribute(
+        "data-theme",
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "dark"
+          : "light"
+      );
+      script.setAttribute("data-lang", "zh-CN");
+      script.setAttribute("data-loading", "lazy");
+      script.crossOrigin = "anonymous";
       script.async = true;
 
       script.onload = () => {
-        loader.style.display = 'none';
-        container.classList.remove('hidden');
+        loader.style.display = "none";
+        container.classList.remove("hidden");
       };
 
       container.appendChild(script);
     };
   }
 
-  document.addEventListener('astro:page-load', initGiscusLoading);
+  document.addEventListener("astro:page-load", initGiscusLoading);
   initGiscusLoading();
 </script>
 
@@ -100,7 +110,8 @@ import IconMessage from './icons/IconMessage.astro';
     display: none;
   }
 
-  .giscus, .giscus-frame {
+  .giscus,
+  .giscus-frame {
     width: 100% !important;
   }
 </style>

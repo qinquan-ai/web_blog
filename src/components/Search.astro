@@ -1,6 +1,6 @@
 ---
-import IconSearch from './icons/IconSearch.astro';
-import IconClose from './icons/IconClose.astro';
+import IconSearch from "./icons/IconSearch.astro";
+import IconClose from "./icons/IconClose.astro";
 ---
 
 <div id="search-modal" class="search-modal" aria-hidden="true">
@@ -8,11 +8,11 @@ import IconClose from './icons/IconClose.astro';
   <div class="search-container">
     <div class="search-header">
       <span class="search-icon"><IconSearch size={20} /></span>
-      <input 
-        type="text" 
-        id="search-input" 
-        class="search-input" 
-        placeholder="搜索文章... (Esc 关闭)" 
+      <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder="搜索文章... (Esc 关闭)"
         autocomplete="off"
       />
       <button id="search-close" class="search-close" aria-label="关闭搜索">
@@ -231,30 +231,46 @@ import IconClose from './icons/IconClose.astro';
     background: var(--border-light);
     color: var(--text-primary);
   }
-  
+
   .no-history {
     padding: var(--space-6) var(--space-5);
     text-align: center;
     color: var(--text-tertiary);
     font-size: 0.9375rem;
   }
+
+  :global(.search-result-title mark),
+  :global(.search-result-desc mark) {
+    background: var(--color-highlight, #fef08a);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 2px;
+  }
 </style>
 
 <script>
-  let searchData: any[] = [];
+  interface SearchItem {
+    slug: string;
+    title: string;
+    description: string;
+    tags?: string[];
+  }
+  let searchData: SearchItem[] = [];
   let isLoaded = false;
 
-  const searchModal = document.getElementById('search-modal');
-  const searchBackdrop = document.getElementById('search-backdrop');
-  const searchClose = document.getElementById('search-close');
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const searchResults = document.getElementById('search-results');
-  const searchEmpty = document.getElementById('search-empty');
-  const searchHistory = document.getElementById('search-history');
-  const historyTags = document.getElementById('history-tags');
-  const clearHistoryBtn = document.getElementById('clear-history');
+  const searchModal = document.getElementById("search-modal");
+  const searchBackdrop = document.getElementById("search-backdrop");
+  const searchClose = document.getElementById("search-close");
+  const searchInput = document.getElementById(
+    "search-input"
+  ) as HTMLInputElement;
+  const searchResults = document.getElementById("search-results");
+  const searchEmpty = document.getElementById("search-empty");
+  const searchHistory = document.getElementById("search-history");
+  const historyTags = document.getElementById("history-tags");
+  const clearHistoryBtn = document.getElementById("clear-history");
 
-  const HISTORY_KEY = 'astro_blog_search_history';
+  const HISTORY_KEY = "astro_blog_search_history";
   const MAX_HISTORY = 5;
 
   const getHistory = (): string[] => {
@@ -283,96 +299,113 @@ import IconClose from './icons/IconClose.astro';
 
   const renderHistory = () => {
     const h = getHistory();
-    const hasInput = searchInput && searchInput.value.trim() !== '';
-    const historyHeader = document.getElementById('history-header');
-    const noHistory = document.getElementById('no-history');
+    const hasInput = searchInput && searchInput.value.trim() !== "";
+    const historyHeader = document.getElementById("history-header");
+    const noHistory = document.getElementById("no-history");
 
     if (hasInput) {
-      if (searchHistory) searchHistory.style.display = 'none';
+      if (searchHistory) searchHistory.style.display = "none";
       return;
     }
 
     if (searchHistory) {
-      searchHistory.style.display = 'block';
+      searchHistory.style.display = "block";
       if (h.length === 0) {
-        if (historyHeader) historyHeader.style.display = 'none';
-        if (historyTags) historyTags.style.display = 'none';
-        if (noHistory) noHistory.style.display = 'block';
+        if (historyHeader) historyHeader.style.display = "none";
+        if (historyTags) historyTags.style.display = "none";
+        if (noHistory) noHistory.style.display = "block";
       } else {
-        if (historyHeader) historyHeader.style.display = 'flex';
+        if (historyHeader) historyHeader.style.display = "flex";
         if (historyTags) {
-          historyTags.style.display = 'flex';
-          historyTags.innerHTML = h.map(item => `
+          historyTags.style.display = "flex";
+          historyTags.innerHTML = h
+            .map(
+              item => `
             <button class="history-tag" data-query="${item}">${item}</button>
-          `).join('');
-          
-          historyTags.querySelectorAll('.history-tag').forEach(tag => {
-            tag.addEventListener('click', (e) => {
-              const query = (e.target as HTMLElement).getAttribute('data-query');
+          `
+            )
+            .join("");
+
+          historyTags.querySelectorAll(".history-tag").forEach(tag => {
+            tag.addEventListener("click", e => {
+              const query = (e.target as HTMLElement).getAttribute(
+                "data-query"
+              );
               if (query && searchInput) {
                 searchInput.value = query;
-                searchInput.dispatchEvent(new Event('input'));
+                searchInput.dispatchEvent(new Event("input"));
               }
             });
           });
         }
-        if (noHistory) noHistory.style.display = 'none';
+        if (noHistory) noHistory.style.display = "none";
       }
     }
   };
 
   // Trigger buttons (will be added in Header)
   const setupTriggers = () => {
-    const triggers = document.querySelectorAll('.search-trigger');
+    const triggers = document.querySelectorAll(".search-trigger");
     triggers.forEach(btn => {
-      btn.addEventListener('click', openSearch);
+      btn.addEventListener("click", openSearch);
     });
   };
 
   const loadData = async () => {
     if (isLoaded) return;
     try {
-      const res = await fetch('/search.json');
+      const res = await fetch("/search.json");
       searchData = await res.json();
       isLoaded = true;
     } catch (e) {
-      console.error('Failed to load search data', e);
+      // eslint-disable-next-line no-console
+      console.error("Failed to load search data", e);
     }
   };
 
   const openSearch = async () => {
-    searchModal?.classList.add('is-open');
+    searchModal?.classList.add("is-open");
     searchInput?.focus();
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     renderHistory();
     await loadData();
   };
 
   const closeSearch = () => {
-    searchModal?.classList.remove('is-open');
-    searchInput!.value = '';
+    searchModal?.classList.remove("is-open");
+    searchInput!.value = "";
     renderResults([]);
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   };
 
-  const renderResults = (results: any[]) => {
+  const renderResults = (results: SearchItem[]) => {
     if (!searchResults || !searchEmpty) return;
+    const query = searchInput?.value.trim() ?? "";
 
-    if (results.length === 0 && searchInput?.value.trim() !== '') {
-      searchResults.innerHTML = '';
-      searchEmpty.style.display = 'block';
+    if (results.length === 0 && query !== "") {
+      searchResults.innerHTML = "";
+      searchEmpty.style.display = "block";
       return;
     }
 
-    searchEmpty.style.display = 'none';
-    searchResults.innerHTML = results.map(item => `
+    searchEmpty.style.display = "none";
+    const highlight = (text: string) =>
+      text.replace(
+        new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"),
+        "<mark>$1</mark>"
+      );
+    searchResults.innerHTML = results
+      .map(
+        item => `
       <li class="search-result-item">
         <a href="/blog/${item.slug}">
-          <div class="search-result-title">${item.title}</div>
-          <div class="search-result-desc">${item.description}</div>
+          <div class="search-result-title">${highlight(item.title)}</div>
+          <div class="search-result-desc">${highlight(item.description)}</div>
         </a>
       </li>
-    `).join('');
+    `
+      )
+      .join("");
   };
 
   const onSearch = (e: Event) => {
@@ -383,13 +416,14 @@ import IconClose from './icons/IconClose.astro';
       return;
     }
 
-    if (searchHistory) searchHistory.style.display = 'none';
+    if (searchHistory) searchHistory.style.display = "none";
 
     const filtered = searchData.filter(item => {
       return (
         item.title.toLowerCase().includes(query) ||
         item.description.toLowerCase().includes(query) ||
-        (item.tags && item.tags.some((tag: string) => tag.toLowerCase().includes(query)))
+        (item.tags &&
+          item.tags.some((tag: string) => tag.toLowerCase().includes(query)))
       );
     });
 
@@ -397,26 +431,26 @@ import IconClose from './icons/IconClose.astro';
   };
 
   // Event Listeners
-  searchBackdrop?.addEventListener('click', closeSearch);
-  searchClose?.addEventListener('click', closeSearch);
-  searchInput?.addEventListener('input', onSearch);
-  clearHistoryBtn?.addEventListener('click', clearHistory);
-  
-  searchResults?.addEventListener('click', (e) => {
-    const link = (e.target as HTMLElement).closest('a');
+  searchBackdrop?.addEventListener("click", closeSearch);
+  searchClose?.addEventListener("click", closeSearch);
+  searchInput?.addEventListener("input", onSearch);
+  clearHistoryBtn?.addEventListener("click", clearHistory);
+
+  searchResults?.addEventListener("click", e => {
+    const link = (e.target as HTMLElement).closest("a");
     if (link && searchInput?.value.trim()) {
       addHistory(searchInput.value.trim());
     }
   });
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener("keydown", e => {
     // Esc to close
-    if (e.key === 'Escape' && searchModal?.classList.contains('is-open')) {
+    if (e.key === "Escape" && searchModal?.classList.contains("is-open")) {
       closeSearch();
     }
   });
 
   // Re-setup on page changes (view transitions)
-  document.addEventListener('astro:page-load', setupTriggers);
+  document.addEventListener("astro:page-load", setupTriggers);
   setupTriggers();
 </script>

@@ -13,16 +13,26 @@ const { crumbs } = Astro.props;
 
 <nav class="breadcrumb" aria-label="面包屑导航">
   <ol class="breadcrumb-list">
-    {crumbs.map((crumb, i) => (
-      <li class="breadcrumb-item">
-        {i > 0 && <span class="breadcrumb-sep" aria-hidden="true">/</span>}
-        {i === crumbs.length - 1 ? (
-          <span class="breadcrumb-current" aria-current="page">{crumb.label}</span>
-        ) : (
-          <a href={crumb.href} class="breadcrumb-link">{crumb.label}</a>
-        )}
-      </li>
-    ))}
+    {
+      crumbs.map((crumb, i) => (
+        <li class="breadcrumb-item">
+          {i > 0 && (
+            <span class="breadcrumb-sep" aria-hidden="true">
+              /
+            </span>
+          )}
+          {i === crumbs.length - 1 ? (
+            <span class="breadcrumb-current" aria-current="page">
+              {crumb.label}
+            </span>
+          ) : (
+            <a href={crumb.href} class="breadcrumb-link">
+              {crumb.label}
+            </a>
+          )}
+        </li>
+      ))
+    }
   </ol>
 </nav>
 

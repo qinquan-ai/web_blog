@@ -1,6 +1,6 @@
 ---
-import { SITE, TAGS } from '../lib/config';
-import { formatDate } from '../lib/utils';
+import { TAGS } from "../lib/config";
+import { formatDate } from "../lib/utils";
 
 interface Props {
   title: string;
@@ -11,13 +11,18 @@ interface Props {
   readingTime?: string;
 }
 
-const { title, description, pubDate, tags = [], slug, readingTime = '5 min' } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  tags = [],
+  slug,
+  readingTime = "5 min",
+} = Astro.props;
 
 const formattedDate = formatDate(pubDate);
 
-const tagData = tags
-  .map(t => TAGS.find(tag => tag.slug === t))
-  .filter(Boolean);
+const tagData = tags.map(t => TAGS.find(tag => tag.slug === t)).filter(Boolean);
 ---
 
 <article class="post-card">
@@ -25,21 +30,23 @@ const tagData = tags
     <div class="post-card-inner">
       <h2 class="post-card-title">{title}</h2>
       <p class="post-card-desc">{description}</p>
-      
+
       <div class="post-card-footer">
         <div class="post-card-meta">
           <time datetime={pubDate.toISOString()}>{formattedDate}</time>
           <span class="meta-sep">·</span>
           <span>{readingTime}</span>
         </div>
-        
-        {tagData.length > 0 && (
-          <div class="post-card-tags">
-            {tagData.map(tag => (
-              <span class="tag-chip">{tag!.name}</span>
-            ))}
-          </div>
-        )}
+
+        {
+          tagData.length > 0 && (
+            <div class="post-card-tags">
+              {tagData.map(tag => (
+                <span class="tag-chip">{tag!.name}</span>
+              ))}
+            </div>
+          )
+        }
       </div>
     </div>
   </a>
@@ -117,5 +124,7 @@ const tagData = tags
     font-size: 0.8125rem;
     color: var(--text-tertiary);
   }
-  .meta-sep { opacity: 0.5; }
+  .meta-sep {
+    opacity: 0.5;
+  }
 </style>
