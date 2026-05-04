@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist && xcopy /E /I /Y dist\\pagefind public\\pagefind 2>nul & echo done",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -13,14 +13,19 @@
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.3.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@shikijs/transformers": "^1.29.2",
     "@supabase/supabase-js": "^2.105.1",
     "astro": "^5.0.0",
     "mdast-util-to-string": "^4.0.0",
     "reading-time": "^1.5.0",
+    "satori": "^0.18.4",
     "sharp": "^0.33.5",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.1"
+    "@pagefind/default-ui": "^1.5.2",
+    "@playwright/test": "^1.49.1",
+    "pagefind": "^1.5.2"
   }
 }

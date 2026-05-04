@@ -12,6 +12,12 @@ export interface Site {
   google?: string;
   douyin?: string;
   csdn?: string;
+  dynamicOgImage?: boolean;
+  editPost?: {
+    enabled: boolean;
+    text: string;
+    url: string;
+  };
 }
 
 export interface Tag {

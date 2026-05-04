@@ -1,0 +1,48 @@
+---
+import IconEdit from './icons/IconEdit.astro';
+import { SITE } from '../lib/config';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  class?: string;
+}
+
+const { post, class: className } = Astro.props;
+
+if (!SITE.editPost?.enabled) {
+  // Render nothing if disabled
+}
+---
+
+{SITE.editPost?.enabled && (
+  <a
+    href={`${SITE.editPost.url}src/content/blog/${post.id.replace(/\.(md|mdx)$/, '')}.mdx`}
+    class:list={['edit-post-link', className]}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <IconEdit />
+    {SITE.editPost.text}
+  </a>
+)}
+
+<style>
+  .edit-post-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color var(--duration-fast);
+  }
+
+  .edit-post-link:hover {
+    color: var(--text-secondary);
+  }
+
+  .edit-post-link :global(svg) {
+    flex-shrink: 0;
+  }
+</style>

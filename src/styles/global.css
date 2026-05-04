@@ -200,13 +200,13 @@ pre code {
    ============================================ */
 
 blockquote {
-  border-left: 3px solid var(--accent);
+  border-left: 2px solid var(--border);
   padding: var(--space-4) var(--space-5);
   margin: var(--space-5) 0;
   background: var(--bg-secondary);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   color: var(--text-secondary);
-  font-style: italic;
+  font-style: normal;
 }
 blockquote p { margin: 0; }
 
@@ -247,14 +247,18 @@ ul, ol {
 }
 li { margin-bottom: var(--space-2); }
 
-/* ============================================
-   分割线
-   ============================================ */
-
+/* --- 分割线（渐隐中线）--- */
 hr {
   border: none;
-  border-top: 1px solid var(--border-light);
+  height: 1px;
   margin: var(--space-7) 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-light) 20%,
+    var(--border-light) 80%,
+    transparent
+  );
 }
 
 /* ============================================
@@ -466,5 +470,154 @@ a.tag-chip:hover,
 .page-desc {
   font-size: 1rem;
   margin: 0;
+}
+
+/* ============================================
+   Pagefind UI — 复用全站设计系统
+   ============================================ */
+
+.pagefind-ui__search-input {
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 10px 14px !important;
+  width: 100% !important;
+  outline: none !important;
+  transition: border-color var(--duration-fast) !important;
+  box-shadow: none !important;
+}
+
+.pagefind-ui__search-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15) !important;
+}
+
+.pagefind-ui__search-input::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+.pagefind-ui__search-submit {
+  font-family: var(--font-sans) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 4px 12px !important;
+  cursor: pointer !important;
+  transition: all var(--duration-fast) !important;
+  margin-left: 8px !important;
+}
+
+.pagefind-ui__search-submit:hover {
+  color: var(--text-primary) !important;
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border) !important;
+  opacity: 1 !important;
+}
+
+.pagefind-ui__search-clear {
+  font-family: var(--font-sans) !important;
+  font-size: 0.8125rem !important;
+  color: var(--text-tertiary) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--duration-fast) !important;
+  opacity: 1 !important;
+  min-width: unset !important;
+}
+
+.pagefind-ui__search-clear:hover {
+  color: var(--text-primary) !important;
+  background: var(--bg-secondary) !important;
+}
+
+.pagefind-ui__results {
+  margin-top: var(--space-4) !important;
+}
+
+.pagefind-ui__result {
+  padding: var(--space-4) 0 !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.pagefind-ui__result:last-child {
+  border-bottom: none !important;
+}
+
+.pagefind-ui__result-title {
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.pagefind-ui__result-link {
+  color: var(--accent) !important;
+  text-decoration: none !important;
+  transition: opacity var(--duration-fast) !important;
+}
+
+.pagefind-ui__result-link:hover {
+  opacity: 0.8 !important;
+  text-decoration: none !important;
+}
+
+.pagefind-ui__result-excerpt {
+  font-family: var(--font-sans) !important;
+  font-size: 0.875rem !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.6 !important;
+  margin-top: var(--space-2) !important;
+}
+
+.pagefind-ui__result-excerpt mark {
+  background: rgba(0, 113, 227, 0.15) !important;
+  color: var(--accent) !important;
+  border-radius: 2px !important;
+  padding: 0 2px !important;
+  font-weight: 500 !important;
+}
+
+.pagefind-ui__message {
+  font-family: var(--font-sans) !important;
+  color: var(--text-tertiary) !important;
+  font-size: 0.9375rem !important;
+  text-align: center !important;
+  padding: var(--space-7) 0 !important;
+}
+
+.pagefind-ui__autocomplete {
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
+}
+
+.pagefind-ui__result-item {
+  padding: var(--space-3) var(--space-4) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  transition: background var(--duration-fast) !important;
+  cursor: pointer !important;
+}
+
+.pagefind-ui__result-item:last-child {
+  border-bottom: none !important;
+}
+
+.pagefind-ui__result-item:hover,
+.pagefind-ui__result-item--selected {
+  background: var(--bg-secondary) !important;
 }
 

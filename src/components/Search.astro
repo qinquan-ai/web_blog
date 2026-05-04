@@ -410,11 +410,6 @@ import IconClose from './icons/IconClose.astro';
   });
 
   document.addEventListener('keydown', (e) => {
-    // Cmd+K or Ctrl+K to open
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      openSearch();
-    }
     // Esc to close
     if (e.key === 'Escape' && searchModal?.classList.contains('is-open')) {
       closeSearch();

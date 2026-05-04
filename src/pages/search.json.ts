@@ -1,22 +1,15 @@
+import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
-export async function GET() {
-  const posts = await getCollection('blog', ({ data }) => {
-    return data.draft !== true;
-  });
-
-  const index = posts.map((post) => ({
-    slug: post.slug,
+export const GET: APIRoute = async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const data = posts.map(post => ({
     title: post.data.title,
     description: post.data.description,
     tags: post.data.tags,
-    pubDate: post.data.pubDate,
+    slug: post.slug,
   }));
-
-  return new Response(JSON.stringify(index), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  return new Response(JSON.stringify(data), {
+    headers: { 'Content-Type': 'application/json' },
   });
-}
+};

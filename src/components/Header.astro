@@ -20,9 +20,9 @@ import IconMoon from './icons/IconMoon.astro';
       </nav>
 
       <div class="header-actions">
-        <button class="search-trigger action-btn" aria-label="搜索">
+        <a href="/search" class="action-btn search-nav-btn" aria-label="搜索" title="搜索文章">
           <IconSearch />
-        </button>
+        </a>
         <button class="theme-toggle action-btn" aria-label="切换主题" id="theme-toggle">
           <span class="icon-sun"><IconSun /></span>
           <span class="icon-moon"><IconMoon /></span>
@@ -47,15 +47,11 @@ import IconMoon from './icons/IconMoon.astro';
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg-primary);
+    background: color-mix(in srgb, var(--bg-primary) 85%, transparent);
     border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 1px 0 var(--border-light);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.85);
-  }
-
-  :global([data-theme="dark"]) .site-header {
-    background: rgba(0, 0, 0, 0.85);
   }
 
   .header-inner {
@@ -158,6 +154,4 @@ import IconMoon from './icons/IconMoon.astro';
   .icon-moon { display: block; }
   :global([data-theme="dark"]) .icon-sun { display: block; }
   :global([data-theme="dark"]) .icon-moon { display: none; }
-
-  }
 </style>

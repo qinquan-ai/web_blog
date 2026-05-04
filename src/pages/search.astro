@@ -1,0 +1,129 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../lib/config';
+---
+
+<Base title={`搜索 | ${SITE.title}`} description="搜索文章">
+  <div class="search-page">
+    <div class="container">
+      <div class="search-header">
+        <h1 class="search-title">搜索文章</h1>
+        <p class="search-hint">输入关键词，快速找到你想看的内容</p>
+      </div>
+      <div id="pagefind-search" class="pagefind-wrapper"></div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  async function initPagefind() {
+    const el = document.getElementById('pagefind-search');
+    if (!el) return;
+
+    // Dev 模式：pagefind 索引不存在，显示提示
+    if (import.meta.env.DEV) {
+      el.innerHTML = `
+        <div class="pagefind-dev-warn">
+          <strong>开发模式提示</strong>
+          <p>Pagefind 索引需要构建后才能使用。请运行 <code>npm run build</code> 后通过 <code>npm run preview</code> 访问。</p>
+        </div>
+      `;
+      return;
+    }
+
+    // 生产模式：动态导入 pagefind-ui（构建后存在于 /pagefind/）
+    const onIdle = (window as any).requestIdleCallback || (cb => setTimeout(cb, 200));
+
+    onIdle(async () => {
+      try {
+        const { PagefindUI } = await import('@pagefind/default-ui');
+        new PagefindUI({
+          element: '#pagefind-search',
+          showImages: false,
+          showSubResults: true,
+          resetStyles: false,
+        });
+
+        // 支持 ?q= URL 参数直接搜索
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        if (q) {
+          const input = document.querySelector<HTMLInputElement>('.pagefind-ui__search-input');
+          if (input) {
+            input.value = q;
+            input.dispatchEvent(new Event('input'));
+          }
+        }
+      } catch (e) {
+        el.innerHTML = '<p style="color:var(--text-secondary)">搜索索引暂不可用，请稍后重试。</p>';
+        console.error('Pagefind load failed:', e);
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initPagefind);
+  initPagefind();
+</script>
+
+<style is:global>
+  #pagefind-search {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: var(--accent, #0071e3);
+    --pagefind-ui-text: var(--text-primary, #1d1d1f);
+    --pagefind-ui-background: var(--bg-primary, #ffffff);
+    --pagefind-ui-border: var(--border-light, #e5e5ea);
+    --pagefind-ui-tag: var(--bg-secondary, #f5f5f7);
+    --pagefind-ui-border-radius: 10px;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-image-border-radius: 6px;
+    --pagefind-ui-image-box-ratio: 2.5;
+    --pagefind-ui-font: inherit;
+  }
+
+  .pagefind-dev-warn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    margin-top: var(--space-4);
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .pagefind-dev-warn code {
+    background: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+</style>
+
+<style>
+  .search-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
+
+  .search-header {
+    text-align: center;
+    margin-bottom: var(--space-7);
+  }
+
+  .search-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.03em;
+  }
+
+  .search-hint {
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .pagefind-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+</style>

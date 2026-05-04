@@ -1,14 +1,14 @@
 ---
 import Base from './Base.astro';
 import Button from '../components/ui/Button.astro';
-import BackLink from '../components/BackLink.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 import IconArrowLeft from '../components/icons/IconArrowLeft.astro';
 import Giscus from '../components/Giscus.astro';
 import ShareButton from '../components/ShareButton.astro';
 import ViewCounter from '../components/ViewCounter.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import PostNav from '../components/PostNav.astro';
-import CodeCopy from '../components/CodeCopy.astro';
+import EditPost from '../components/EditPost.astro';
 import { TAGS } from '../lib/config';
 import { formatDateFull } from '../lib/utils';
 import type { CollectionEntry } from 'astro:content';
@@ -23,9 +23,10 @@ interface Props {
   headings?: any[];
   prevPost?: CollectionEntry<'blog'> | null;
   nextPost?: CollectionEntry<'blog'> | null;
+  post?: CollectionEntry<'blog'>;
 }
 
-const { title, description, pubDate, tags = [], readingTime = '5 min', slug, headings = [], prevPost = null, nextPost = null } = Astro.props;
+const { title, description, pubDate, tags = [], readingTime = '5 min', slug, headings = [], prevPost = null, nextPost = null, post } = Astro.props;
 
 const formattedDate = formatDateFull(pubDate);
 
@@ -38,10 +39,15 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
 ---
 
 <Base title={title} description={description} type="article">
+  <div class="reading-progress" id="reading-progress"></div>
   <article class="post-layout">
     <div class="container">
-      <!-- Back link -->
-      <BackLink href="/blog" label="文章列表" />
+      <!-- Breadcrumb -->
+      <Breadcrumb crumbs={[
+        { label: '首页', href: '/' },
+        { label: '文章', href: '/blog' },
+        { label: title, href: '#' },
+      ]} />
 
       <!-- Header -->
       <header class="post-header">
@@ -66,19 +72,46 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
               <ViewCounter slug={slug} />
             </>
           )}
+          {post && (
+            <>
+              <span class="meta-sep">·</span>
+              <EditPost post={post} />
+            </>
+          )}
         </div>
       </header>
 
       <!-- Content -->
       <div class="post-content-wrapper">
-        <div class="post-content prose">
+        <div class="post-content prose" data-pagefind-body>
           <slot />
         </div>
 
         {hasToC && (
-          <aside class="post-sidebar">
-            <TableOfContents headings={headings} />
-          </aside>
+          <>
+            <aside class="post-sidebar" data-pagefind-ignore>
+              <TableOfContents headings={headings} />
+            </aside>
+            <div class="toc-fab-wrapper">
+              <button class="toc-fab" id="toc-fab" aria-label="目录">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <line x1="3" y1="12" x2="15" y2="12"/>
+                  <line x1="3" y1="18" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="toc-drawer" id="toc-drawer" aria-hidden="true">
+              <div class="toc-drawer-backdrop" id="toc-drawer-backdrop"></div>
+              <div class="toc-drawer-panel">
+                <div class="toc-drawer-header">
+                  <span class="toc-drawer-title">目录</span>
+                  <button class="toc-drawer-close" id="toc-drawer-close" aria-label="关闭">✕</button>
+                </div>
+                <TableOfContents headings={headings} />
+              </div>
+            </div>
+          </>
         )}
       </div>
 
@@ -98,13 +131,80 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
       </nav>
     </div>
   </article>
-  <CodeCopy />
+  <script>
+    function initReadingProgress() {
+      const bar = document.getElementById('reading-progress');
+      if (!bar) return;
+      const update = () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width = progress + '%';
+      };
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    }
+
+    function addHeadingLinks() {
+      const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
+      headings.forEach(heading => {
+        if (!heading.id) return;
+        const anchor = document.createElement('a');
+        anchor.href = '#' + heading.id;
+        anchor.className = 'heading-anchor';
+        anchor.setAttribute('aria-label', '链接到本节');
+        anchor.textContent = '#';
+        heading.appendChild(anchor);
+      });
+    }
+
+    function initTocDrawer() {
+      const fab = document.getElementById('toc-fab');
+      const drawer = document.getElementById('toc-drawer');
+      const backdrop = document.getElementById('toc-drawer-backdrop');
+      const closeBtn = document.getElementById('toc-drawer-close');
+      if (!fab || !drawer) return;
+
+      const open = () => {
+        drawer.classList.add('is-open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      };
+      const close = () => {
+        drawer.classList.remove('is-open');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      };
+
+      fab.addEventListener('click', open);
+      backdrop?.addEventListener('click', close);
+      closeBtn?.addEventListener('click', close);
+    }
+
+    document.addEventListener('astro:page-load', () => {
+      initReadingProgress();
+      initTocDrawer();
+      addHeadingLinks();
+    });
+    if (document.readyState !== 'loading') { initReadingProgress(); initTocDrawer(); addHeadingLinks(); }
+  </script>
 </Base>
 
 <style>
   .post-layout {
     padding-top: var(--space-8);
     padding-bottom: var(--space-9);
+  }
+
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 200;
+    transition: width 50ms linear;
   }
 
   .post-content-wrapper {
@@ -123,12 +223,121 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
       top: 0;
       width: 240px;
     }
+    .toc-fab-wrapper { display: none; }
+    .toc-drawer { display: none !important; }
   }
 
-  /* back-link margin override for detail page */
-  .post-layout :global(.back-link) {
-    margin-bottom: var(--space-7);
+  /* Mobile FAB */
+  .toc-fab-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--space-5);
   }
+
+  .toc-fab {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .toc-fab:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border);
+    transform: scale(1.05);
+  }
+
+  /* Mobile Drawer */
+  .toc-drawer {
+    display: none;
+  }
+
+  .toc-drawer.is-open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+  }
+
+  .toc-drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+  }
+
+  .toc-drawer-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-5);
+    max-height: 60vh;
+    overflow-y: auto;
+    animation: slide-up 0.25s var(--ease-out);
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .toc-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .toc-drawer-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .toc-drawer-close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    padding: var(--space-1);
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast);
+  }
+
+  .toc-drawer-close:hover { color: var(--text-primary); }
+
+  .toc-drawer .toc {
+    position: static;
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .toc-drawer .toc-link {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+  }
+
+  .toc-drawer .toc-link:hover {
+    background: var(--bg-secondary);
+  }
+
+  /* Mobile TOC list inside drawer */
+  .toc-drawer .toc-list { display: flex; flex-direction: column; gap: var(--space-1); }
 
   .post-header {
     margin-bottom: var(--space-7);
@@ -179,8 +388,8 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: var(--space-7);
-    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    margin-top: 0;
     border-top: 1px solid var(--border-light);
   }
 
@@ -200,6 +409,30 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
     padding-bottom: var(--space-3);
     border-bottom: 1px solid var(--border-light);
     scroll-margin-top: 80px;
+  }
+
+  .prose :global(h2),
+  .prose :global(h3),
+  .prose :global(h4) {
+    position: relative;
+  }
+
+  :global(.heading-anchor) {
+    position: absolute;
+    left: -1.5em;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    font-size: 0.85em;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    user-select: none;
+  }
+
+  :global(.prose h2:hover .heading-anchor),
+  :global(.prose h3:hover .heading-anchor),
+  :global(.prose h4:hover .heading-anchor),
+  :global(.heading-anchor:focus-visible) {
+    opacity: 1;
   }
 
   .prose :global(h3) {
@@ -227,9 +460,29 @@ const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
     box-shadow: var(--shadow-md);
   }
 
+  .prose :global(figure.book-cover) {
+    text-align: center;
+    margin: var(--space-8) 0;
+  }
+
+  .prose :global(figure.book-cover img) {
+    display: inline-block;
+    max-width: 280px;
+    width: 100%;
+    margin: 0 auto var(--space-3);
+    box-shadow: var(--shadow-md);
+  }
+
+  .prose :global(figcaption) {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    font-style: italic;
+    margin-top: var(--space-2);
+  }
+
   /* Post Nav Section */
   :global(.post-nav) {
-    margin-bottom: var(--space-8);
+    margin-bottom: 0px;
     padding: var(--space-6) 0;
     border-top: 1px solid var(--border-light);
     border-bottom: 1px solid var(--border-light);

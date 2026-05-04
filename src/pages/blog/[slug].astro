@@ -26,6 +26,7 @@ interface Props {
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, remarkPluginFrontmatter, headings } = await post.render();
 const readingTime = remarkPluginFrontmatter.readingTime || post.data.readingTime || '5 min';
+const ogImage = `${Astro.site}blog/${post.slug}/index.png`;
 ---
 
 <PostLayout
@@ -38,6 +39,8 @@ const readingTime = remarkPluginFrontmatter.readingTime || post.data.readingTime
   headings={headings}
   prevPost={prevPost}
   nextPost={nextPost}
+  image={ogImage}
+  post={post}
 >
   <Content />
 </PostLayout>

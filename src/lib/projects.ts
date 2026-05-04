@@ -6,10 +6,11 @@
 export interface Project {
   name: string;
   description: string;
-  link?: string;         // 在线地址
-  github?: string;       // GitHub 仓库
-  tech?: string[];       // 技术标签
-  wip?: boolean;         // 是否在开发中
+  link?: string;
+  github?: string;
+  tech?: string[];
+  stars: number;
+  wip?: boolean;
 }
 
 export interface ProjectGroup {
@@ -18,4 +19,55 @@ export interface ProjectGroup {
   projects: Project[];
 }
 
+interface GitHubRepo {
+  name: string;
+  description: string | null;
+  html_url: string;
+  homepage: string | null;
+  topics: string[];
+  fork: boolean;
+  archived: boolean;
+  stargazers_count: number;
+}
+
+export async function fetchGitHubProjects(username: string): Promise<ProjectGroup> {
+  try {
+    const res = await fetch(
+      `https://api.github.com/users/${username}/repos?sort=updated&per_page=20&type=owner`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'User-Agent': 'qin-blog',
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.warn(`GitHub API error: ${res.status}`);
+      return { title: '开源项目', projects: [] };
+    }
+
+    const repos: GitHubRepo[] = await res.json();
+
+    const projects: Project[] = repos
+      .filter(repo => !repo.fork && !repo.archived && repo.description)
+      .slice(0, 12)
+      .map(repo => ({
+        name: repo.name,
+        description: repo.description || '',
+        github: repo.html_url,
+        link: repo.homepage || undefined,
+        tech: repo.topics.slice(0, 4),
+        stars: repo.stargazers_count,
+        wip: false,
+      }));
+
+    return { title: '开源项目', projects };
+  } catch (e) {
+    console.warn('Failed to fetch GitHub projects:', e);
+    return { title: '开源项目', projects: [] };
+  }
+}
+
 export const PROJECT_GROUPS: ProjectGroup[] = [];
+

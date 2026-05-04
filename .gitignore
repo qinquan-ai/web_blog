@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# Pagefind search index (generated at build time, not source)
+public/pagefind/
+
 # Environment
 .env
 .env.local
@@ -21,6 +24,7 @@ npm-debug.log*
 # Editor
 .vscode/settings.json
 .idea/
+.cursor/
 
 # Docs (internal)
 docs/

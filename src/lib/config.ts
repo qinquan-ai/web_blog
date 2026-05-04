@@ -7,7 +7,7 @@ import type { Site, Tag } from './types';
 
 export const SITE: Site = {
   title: 'Qin',
-  description: '全栈开发 · AI 基础设施 · 技术笔记本',
+  description: '独立AI实践者的笔记与思考，帮助遇到同样问题的人',
   url: 'https://qin-blog.vercel.app',
   github: 'https://github.com/qinquan-ai',
   email: 'qin16778@gmail.com',
@@ -15,6 +15,12 @@ export const SITE: Site = {
   google: 'mailto:qin16778@gmail.com', // 谷歌邮箱关联
   douyin: '', // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
   csdn: '', // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
+  dynamicOgImage: true,
+  editPost: {
+    enabled: true,
+    text: '在 GitHub 上编辑',
+    url: 'https://github.com/qinquan-ai/blog/edit/main/',
+  },
 };
 
 export const TAGS: Tag[] = [

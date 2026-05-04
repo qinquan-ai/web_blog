@@ -1,8 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import IconGitHub from '../components/icons/IconGitHub.astro';
+import IconStar from '../components/icons/IconStar.astro';
 import IconArrowRight from '../components/icons/IconArrowRight.astro';
-import { PROJECT_GROUPS } from '../lib/projects';
+import { fetchGitHubProjects, PROJECT_GROUPS } from '../lib/projects';
+
+const group = await fetchGitHubProjects('qinquan-ai');
+const allGroups = group.projects.length > 0 ? [group] : PROJECT_GROUPS;
 ---
 
 <Base title="项目" description="我创建和维护的开源项目与工具">
@@ -15,7 +19,7 @@ import { PROJECT_GROUPS } from '../lib/projects';
         </p>
       </header>
 
-      {PROJECT_GROUPS.map((group) => (
+      {allGroups.map((group) => (
         <section class="project-group">
           <div class="group-header">
             <h2 class="group-title">{group.title}</h2>
@@ -48,13 +52,19 @@ import { PROJECT_GROUPS } from '../lib/projects';
                 </h3>
                 <p class="card-desc">{project.description}</p>
 
-                {project.tech && project.tech.length > 0 && (
+                <div class="card-meta">
                   <div class="card-tech">
-                    {project.tech.map((t) => (
+                    {project.tech && project.tech.length > 0 && project.tech.map((t) => (
                       <span class="tech-tag">{t}</span>
                     ))}
                   </div>
-                )}
+                  {project.stars >= 0 && (
+                    <span class="card-stars" title={`${project.stars} stars on GitHub`}>
+                      <IconStar size={12} />
+                      {project.stars}
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -197,8 +207,6 @@ import { PROJECT_GROUPS } from '../lib/projects';
     font-size: 0.875rem;
     color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: var(--space-4);
-    /* 限制行数 */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -209,6 +217,29 @@ import { PROJECT_GROUPS } from '../lib/projects';
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .card-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .card-stars svg {
+    color: #f59e0b;
+    flex-shrink: 0;
   }
 
   .tech-tag {
