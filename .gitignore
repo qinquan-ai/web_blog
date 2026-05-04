@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 .astro/
+.astro-cache/
 
 # Pagefind search index (generated at build time, not source)
 public/pagefind/

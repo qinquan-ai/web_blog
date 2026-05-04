@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist && node scripts/copy-pagefind.mjs",
+    "build": "astro build --cache-dir .astro-cache && pagefind --site dist && node scripts/copy-pagefind.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -1,22 +1,23 @@
 import satori from 'satori';
+import { readFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SITE } from '../lib/config';
 import { svgToBuffer } from './generateOgImages';
 
-async function getFont() {
-  const inter = await fetch(
-    'https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-400-normal.woff'
-  ).then(res => res.arrayBuffer());
-  const interBold = await fetch(
-    'https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-700-normal.woff'
-  ).then(res => res.arrayBuffer());
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function getFont() {
+  const inter400 = readFileSync(resolve(__dirname, '../../public/fonts/inter-400.woff'));
+  const inter700 = readFileSync(resolve(__dirname, '../../public/fonts/inter-700.woff'));
   return [
-    { name: 'Inter', data: inter as ArrayBuffer, weight: 400, style: 'normal' },
-    { name: 'Inter', data: interBold as ArrayBuffer, weight: 700, style: 'normal' },
+    { name: 'Inter', data: inter400.buffer.slice(inter400.byteOffset, inter400.byteOffset + inter400.byteLength) as ArrayBuffer, weight: 400, style: 'normal' },
+    { name: 'Inter', data: inter700.buffer.slice(inter700.byteOffset, inter700.byteOffset + inter700.byteLength) as ArrayBuffer, weight: 700, style: 'normal' },
   ];
 }
 
 export async function generateSiteOgImage(): Promise<Buffer> {
-  const fonts = await getFont();
+  const fonts = getFont();
 
   const svg = await satori(
     {
@@ -84,7 +85,7 @@ export async function generateSiteOgImage(): Promise<Buffer> {
 }
 
 export async function generatePostOgImage(title: string, description: string): Promise<Buffer> {
-  const fonts = await getFont();
+  const fonts = getFont();
 
   const truncate = (str: string, maxLen: number) =>
     str.length > maxLen ? str.slice(0, maxLen - 1) + '...' : str;
