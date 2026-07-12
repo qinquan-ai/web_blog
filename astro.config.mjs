@@ -9,7 +9,7 @@ import {
 } from '@shikijs/transformers';
 
 export default defineConfig({
-  site: 'https://qin-blog.vercel.app',
+  site: 'https://qin-blog.pages.dev',
   integrations: [
     mdx(),
     sitemap(),
