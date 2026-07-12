@@ -1,0 +1,738 @@
+---
+import Base from "../layouts/Base.astro";
+
+const IDEAS = [
+  {
+    title: "《独立 AI 实践者的全栈开发与商业化生存指南》",
+    slug: "ai-indie-dev-guide",
+    type: "电子书",
+    stage: "验证中",
+    stageColor: "var(--accent)",
+    desc: "面向程序员的 AI 提效与副业实战小册。不讲高深理论，只探讨如何结合 LLM + Cursor/Cline 极速构建产品、优化架构、自动化部署，并打通变现闭环的实用指南。",
+    highlights: [
+      "基于真实 AI 辅助全链路实战案例",
+      "Cursor & Cline 最佳工程提效实践",
+      "前后端/轻量级数据库极简部署与运维",
+      "海外及国内主流支付渠道与变现路径"
+    ]
+  },
+  {
+    title: "Tracelink — 开发期全栈与 AI 代理链路追踪系统",
+    slug: "tracelink-observability",
+    type: "开发工具",
+    stage: "原型设计",
+    stageColor: "#f59e0b",
+    desc: "在本地开发 AI Agent 或是全栈应用时，是否经常为混乱的请求链和 AI 决策偏差头疼？Tracelink 能够轻松收集全栈跨端跨服务请求，并输出优雅的 NDJSON/可视化的分布式追踪 Spans。",
+    highlights: [
+      "零侵入式开发期全栈 Trace 自动收集",
+      "AI 代理提示词与 Tool Call 链条可视化追溯",
+      "极轻量的开发面板，实时渲染瀑布图",
+      "全链路调用耗时与异常流向一目了然"
+    ]
+  },
+  {
+    title: "Astro Pagefind Plus 静态搜索集成增强包",
+    slug: "astro-pagefind-plus",
+    type: "开源包",
+    stage: "构思中",
+    stageColor: "#86868b",
+    desc: "静态博客的搜索集成往往配置繁琐。这个增强包将为你提供开箱即用的 Web Component 搜索框、完美的深色模式适配、键盘快捷键支持，以及在部署端自动生成 pagefind 索引的 Astro 集成插件。",
+    highlights: [
+      "支持快捷键（如 ⌘K / Ctrl+K）一键唤起",
+      "原生适配 Astro View Transitions 页面转场",
+      "完美支持中英文混合搜索与关键词高亮",
+      "全自适应设计，可无缝融入任何现有主题"
+    ]
+  }
+];
+---
+
+<Base title="想法孵化器" description="独立 AI 实践者的创意与副业构想，你的投票将决定它们是否会被付诸实现。">
+  <div class="ideas-page">
+    <div class="container container--wide">
+      <header class="page-header">
+        <h1 class="page-title">想法孵化器</h1>
+        <p class="page-desc text-secondary">
+          这是我的创意与副业产品实验室。根据《软技能》的 MVP 验证方法，这些想法的实现优先级将完全由你的投票（订阅兴趣）决定。
+        </p>
+      </header>
+
+      <!-- PC 端为横向手风琴，手机端自动转换为纵向折叠手风琴 -->
+      <div class="ideas-grid">
+        {
+          IDEAS.map((idea, index) => (
+            <div
+              class={`idea-card ${index === 0 ? "active" : ""}`}
+              data-slug={idea.slug}
+              style={`--stage-color: ${idea.stageColor}`}
+            >
+              <!-- 1. 折叠预览态 (Collapsed Preview) -->
+              <div class="collapsed-preview">
+                <span class="vertical-tag">{idea.type}</span>
+                <h2 class="vertical-title">{idea.title}</h2>
+                <div class="vertical-heart">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    class="heart-icon"
+                  >
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                  </svg>
+                  <span id={`collapsed-count-${idea.slug}`}>0</span>
+                </div>
+              </div>
+
+              <!-- 2. 展开详静态 (Expanded Details) -->
+              <div class="expanded-content">
+                <div class="card-header">
+                  <span class="type-tag">{idea.type}</span>
+                  <span class="stage-badge">
+                    <span class="stage-dot" />
+                    {idea.stage}
+                  </span>
+                </div>
+
+                <h2 class="idea-title">{idea.title}</h2>
+                <p class="idea-desc">{idea.desc}</p>
+
+                <div class="idea-highlights">
+                  <h3 class="highlights-title">核心内容/特色</h3>
+                  <ul>
+                    {idea.highlights.map(hl => (
+                      <li>
+                        <span class="bullet-check">✓</span>
+                        {hl}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="card-footer">
+                  <div class="interest-stats">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      class="heart-icon"
+                    >
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                    <span>
+                      已有 <strong class="count-value" id={`count-${idea.slug}`}>0</strong> 人感兴趣
+                    </span>
+                  </div>
+
+                  <form class="idea-form" action="#">
+                    <div class="input-group">
+                      <input
+                        type="email"
+                        class="idea-email-input"
+                        placeholder="留下邮箱，当项目有进展或发布时通知你..."
+                        required
+                      />
+                      <button type="submit" class="idea-submit-btn">
+                        我感兴趣
+                      </button>
+                    </div>
+                  </form>
+
+                  <div class="idea-success-msg" style="display: none;">
+                    <span class="success-icon">✓</span> 登记成功！感谢你的支持与关注。
+                  </div>
+                  <div class="idea-error-msg" style="display: none;" />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="privacy-note text-tertiary">
+        * 我们绝不会向第三方泄露你的邮箱地址，也绝不发送任何垃圾邮件。登记仅用于评估产品热度，谢谢你的信任。
+      </p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { supabase } from "../lib/supabase";
+
+  async function initIdeas() {
+    const cards = document.querySelectorAll(".idea-card");
+    if (!cards.length) return;
+
+    // 1. Bind Card Expanding Click Handler
+    cards.forEach((card) => {
+      card.addEventListener("click", () => {
+        if (card.classList.contains("active")) return;
+        cards.forEach((c) => c.classList.remove("active"));
+        card.classList.add("active");
+      });
+    });
+
+    // 2. Fetch and initialize counts & forms
+    cards.forEach(async (card) => {
+      const htmlCard = card as HTMLElement;
+      const slug = htmlCard.dataset.slug;
+      if (!slug) return;
+
+      const countEl = document.getElementById(`count-${slug}`);
+      const collCountEl = document.getElementById(`collapsed-count-${slug}`);
+      const form = htmlCard.querySelector(".idea-form") as HTMLFormElement;
+      const emailInput = htmlCard.querySelector(".idea-email-input") as HTMLInputElement;
+      const submitBtn = htmlCard.querySelector(".idea-submit-btn") as HTMLButtonElement;
+      const successEl = htmlCard.querySelector(".idea-success-msg") as HTMLElement;
+      const errorEl = htmlCard.querySelector(".idea-error-msg") as HTMLElement;
+
+      // Fetch count from Supabase
+      if (import.meta.env.PUBLIC_SUPABASE_URL) {
+        try {
+          const { count, error } = await supabase
+            .from("idea_interests")
+            .select("*", { count: "exact", head: true })
+            .eq("idea_slug", slug);
+
+          if (!error && count !== null) {
+            if (countEl) countEl.innerText = count.toString();
+            if (collCountEl) collCountEl.innerText = count.toString();
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("获取想法兴趣数失败:", e);
+        }
+      }
+
+      // Check local storage for subscription status
+      const isSubscribedLocal = localStorage.getItem(`subscribed_${slug}`);
+      if (isSubscribedLocal) {
+        if (form) form.style.display = "none";
+        if (successEl) successEl.style.display = "block";
+      }
+
+      // Form submission
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // prevent card re-click bubble
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = "登记中...";
+        if (errorEl) errorEl.style.display = "none";
+
+        try {
+          const { error } = await supabase
+            .from("idea_interests")
+            .insert({ idea_slug: slug, email: email });
+
+          if (error) {
+            if (error.code === "23505") {
+              if (successEl) {
+                successEl.innerHTML = '<span class="success-icon">✓</span> 你已经登记过该想法的兴趣啦，谢谢支持！';
+                successEl.style.display = "block";
+              }
+              if (form) form.style.display = "none";
+              localStorage.setItem(`subscribed_${slug}`, "true");
+            } else {
+              throw error;
+            }
+          } else {
+            // Success
+            if (successEl) successEl.style.display = "block";
+            if (form) form.style.display = "none";
+
+            // Increment local displays
+            const newVal = ((parseInt(countEl?.innerText || "0") || 0) + 1).toString();
+            if (countEl) countEl.innerText = newVal;
+            if (collCountEl) collCountEl.innerText = newVal;
+
+            localStorage.setItem(`subscribed_${slug}`, "true");
+          }
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error("提交登记失败:", err);
+          if (errorEl) {
+            const msg = err instanceof Error ? err.message : "登记失败，请稍后重试。";
+            errorEl.innerText = msg;
+            errorEl.style.display = "block";
+          }
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
+        }
+      });
+    });
+  }
+
+  // Handle page transitions in Astro
+  document.addEventListener("astro:page-load", initIdeas);
+  if (document.readyState !== "loading") {
+    initIdeas();
+  }
+</script>
+
+<style>
+  .ideas-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-9);
+  }
+
+  /* --- PC 端手风琴网格 --- */
+  .ideas-grid {
+    display: flex;
+    gap: var(--space-4);
+    width: 100%;
+    height: 520px;
+    align-items: stretch;
+    margin-top: var(--space-6);
+  }
+
+  /* --- 想法卡片基础样式 (苹果微缝克制风) --- */
+  .idea-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--stage-color) !important;
+    background: var(--bg-primary);
+    transition:
+      flex 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- 收缩态 (Collapsed Panels) --- */
+  .idea-card {
+    flex: 0.8;
+    cursor: pointer;
+    padding: var(--space-5) var(--space-2);
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .idea-card:hover:not(.active) {
+    border-color: var(--border);
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* --- 展开态 (Active Panel) --- */
+  .idea-card.active {
+    flex: 5.5;
+    cursor: default;
+    padding: var(--space-6);
+    justify-content: flex-start;
+    align-items: stretch;
+    border-color: var(--border);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-primary);
+  }
+
+  /* ============================================
+     收缩与展开内容的显示/隐藏与动画控制
+     ============================================ */
+
+  /* 折叠预览区 */
+  .collapsed-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.25s var(--ease-out),
+      visibility 0.25s;
+  }
+
+  .active .collapsed-preview {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* 展开内容区 */
+  .expanded-content {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    transition:
+      opacity 0.3s var(--ease-out),
+      visibility 0.3s;
+  }
+
+  .active .expanded-content {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    transition-delay: 0.2s; /* 延迟让卡片先横向撑开 */
+  }
+
+  /* ============================================
+     折叠预览内容排版 (CJK 竖排)
+     ============================================ */
+  .vertical-tag {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    writing-mode: vertical-rl;
+  }
+
+  .vertical-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.2em;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-height: 300px;
+    margin: var(--space-3) 0;
+    line-height: 1.4;
+  }
+
+  .vertical-heart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+  }
+
+  /* ============================================
+     展开内容排版
+     ============================================ */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .type-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--stage-color);
+    background: color-mix(in srgb, var(--stage-color) 8%, transparent);
+    padding: 2px 10px;
+    border-radius: 100px;
+    border: 1px solid color-mix(in srgb, var(--stage-color) 15%, transparent);
+  }
+
+  .stage-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--stage-color);
+  }
+
+  .idea-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-3);
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .idea-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-4);
+  }
+
+  /* 特色列表 */
+  .idea-highlights {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: auto; /* 将 card-footer 推到底部 */
+  }
+
+  .highlights-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-3);
+  }
+
+  .idea-highlights ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .idea-highlights li {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .bullet-check {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  /* 底部表单区域 */
+  .card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+    margin-top: var(--space-4);
+  }
+
+  .interest-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .heart-icon {
+    color: #ef4444;
+    fill: color-mix(in srgb, #ef4444 12%, transparent);
+  }
+
+  .idea-form {
+    width: 100%;
+  }
+
+  .input-group {
+    display: flex;
+    gap: var(--space-2);
+    width: 100%;
+  }
+
+  .idea-email-input {
+    flex: 1;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 8px 14px;
+    outline: none;
+    transition: all var(--duration-fast);
+  }
+
+  .idea-email-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+  }
+
+  .idea-submit-btn {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--bg-primary);
+    background: var(--text-primary);
+    border: 1px solid var(--text-primary);
+    border-radius: var(--radius-md);
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    white-space: nowrap;
+  }
+
+  .idea-submit-btn:hover {
+    opacity: 0.9;
+  }
+
+  .idea-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* 状态反馈提示 */
+  .idea-success-msg {
+    font-size: 0.875rem;
+    color: #065f46;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 10px var(--space-4);
+    border-radius: var(--radius-md);
+    animation: fadeIn 0.3s var(--ease-out);
+  }
+
+  [data-theme="dark"] .idea-success-msg {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+  }
+
+  .success-icon {
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .idea-error-msg {
+    font-size: 0.875rem;
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    padding: 10px var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  [data-theme="dark"] .idea-error-msg {
+    color: #fcd34d;
+    background: rgba(245, 158, 11, 0.12);
+  }
+
+  .privacy-note {
+    font-size: 0.75rem;
+    text-align: center;
+    margin-top: var(--space-6);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================
+     移动端响应式布局 (纵向折叠手风琴)
+     ============================================ */
+  @media (max-width: 768px) {
+    .ideas-grid {
+      flex-direction: column;
+      height: auto;
+      gap: var(--space-3);
+    }
+
+    /* 移动端卡片基础 */
+    .idea-card {
+      flex: none !important;
+      width: 100%;
+      height: 80px;
+      min-height: 80px;
+      padding: var(--space-3) var(--space-4);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--stage-color) !important;
+    }
+
+    /* 移动端展开状态 */
+    .idea-card.active {
+      height: auto;
+      min-height: 440px;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: var(--space-5);
+    }
+
+    /* 折叠预览 (水平排版，隐藏竖排标题) */
+    .collapsed-preview {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    .vertical-tag {
+      writing-mode: horizontal-tb;
+    }
+
+    .vertical-title {
+      writing-mode: horizontal-tb;
+      font-size: 0.9375rem;
+      max-height: unset;
+      margin: 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 60%;
+      letter-spacing: normal;
+    }
+
+    .vertical-heart {
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 展开细节 */
+    .active .expanded-content {
+      height: auto;
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0.1s;
+    }
+
+    .idea-title {
+      font-size: 1.25rem;
+    }
+
+    .input-group {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .idea-submit-btn {
+      width: 100%;
+    }
+  }
+</style>

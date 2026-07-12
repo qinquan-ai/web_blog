@@ -50,3 +50,29 @@ begin
   where slug = p_slug;
 end;
 $$;
+
+-- Create a table to store users' interest in ideas
+create table if not exists public.idea_interests (
+  id uuid default gen_random_uuid() primary key,
+  idea_slug text not null,
+  email text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique (idea_slug, email)
+);
+
+-- Index for faster queries
+create index if not exists idea_interests_slug_idx on public.idea_interests (idea_slug);
+
+-- Enable RLS
+alter table public.idea_interests enable row level security;
+
+-- Allow anonymous users to insert interests
+create policy "Allow anonymous interest inserts" 
+  on public.idea_interests for insert 
+  with check (true);
+
+-- Allow anonymous users to read counts
+create policy "Allow anonymous interest selects" 
+  on public.idea_interests for select 
+  using (true);
+
