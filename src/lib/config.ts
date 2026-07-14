@@ -8,7 +8,7 @@ import type { Site, Tag } from "./types";
 export const SITE: Site = {
   title: "Qin",
   description: "独立AI实践者的笔记与思考，帮助遇到同样问题的人",
-  url: "https://qin-blog.vercel.app",
+  url: "https://qin-blog.pages.dev",
   github: "https://github.com/qinquan-ai",
   email: "qin16778@gmail.com",
   author: "Qin",
@@ -21,6 +21,11 @@ export const SITE: Site = {
     text: "在 GitHub 上编辑",
     url: "https://github.com/qinquan-ai/blog/edit/main/",
   },
+};
+
+export const SPONSOR = {
+  afdian: "https://ifdian.net/a/qinquan-ai",
+  github: "",
 };
 
 export const TAGS: Tag[] = [

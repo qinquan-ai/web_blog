@@ -1,0 +1,190 @@
+---
+import Base from "../layouts/Base.astro";
+import Button from "../ui/components/Button.astro";
+import { SITE, SPONSOR } from "../lib/config";
+
+const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
+---
+
+<Base
+  title="支持"
+  description={`支持 ${SITE.title} 持续维护开源工具、AI 应用与技术内容`}
+>
+  <div class="sponsor-page">
+    <div class="container sponsor-container">
+      <header class="sponsor-head">
+        <p class="sponsor-eyebrow">支持开放创作</p>
+        <h1>支持持续创作</h1>
+        <p>
+          我在维护开源开发工具、AI 应用和技术博客。如果这些工作对你有帮助，
+          可以通过赞助支持它们继续迭代。
+        </p>
+      </header>
+
+      <section class="sponsor-section" aria-labelledby="use-title">
+        <h2 id="use-title">赞助会用于</h2>
+        <div class="use-list">
+          <div>
+            <strong>基础设施</strong>
+            <span>域名、托管、测试服务与必要的开发资源</span>
+          </div>
+          <div>
+            <strong>开源维护</strong>
+            <span>修复问题、完善文档、发布可验证的软件包</span>
+          </div>
+          <div>
+            <strong>技术内容</strong>
+            <span>记录真实项目中的设计决策、失败经验与实践方法</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sponsor-section" aria-labelledby="channel-title">
+        <h2 id="channel-title">赞助渠道</h2>
+        {
+          hasSponsorChannel ? (
+            <div class="channel-actions">
+              {SPONSOR.afdian && (
+                <Button
+                  href={SPONSOR.afdian}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  通过爱发电支持
+                </Button>
+              )}
+              {SPONSOR.github && (
+                <Button
+                  href={SPONSOR.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outline"
+                >
+                  通过 GitHub Sponsors 支持
+                </Button>
+              )}
+            </div>
+          ) : (
+            <p class="channel-pending">
+              爱发电主页正在配置中。赞助入口开放后，本页地址不会变化。
+            </p>
+          )
+        }
+      </section>
+
+      <section
+        class="sponsor-section sponsor-note"
+        aria-labelledby="principle-title"
+      >
+        <h2 id="principle-title">赞助原则</h2>
+        <p>
+          赞助完全自愿，不影响开源功能的可用性，也不代表购买功能优先级或商业支持。
+          项目路线仍以实际问题、维护能力和公开讨论为依据。
+        </p>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sponsor-page {
+    padding: var(--space-8) 0 var(--space-9);
+  }
+
+  .sponsor-container {
+    max-width: 760px;
+  }
+
+  .sponsor-head {
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .sponsor-eyebrow {
+    margin-bottom: var(--space-3);
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .sponsor-head h1 {
+    margin-bottom: var(--space-4);
+    font-size: 2.25rem;
+    letter-spacing: 0;
+  }
+
+  .sponsor-head p,
+  .sponsor-note p {
+    max-width: 640px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .sponsor-section {
+    padding: var(--space-7) 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .sponsor-section:last-child {
+    border-bottom: 0;
+  }
+
+  .sponsor-section h2 {
+    margin-bottom: var(--space-5);
+    font-size: 1.0625rem;
+  }
+
+  .use-list {
+    display: grid;
+    gap: 0;
+  }
+
+  .use-list div {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--space-5);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .use-list strong {
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+  }
+
+  .use-list span,
+  .channel-pending {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .channel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .channel-pending {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--text-tertiary);
+  }
+
+  @media (max-width: 640px) {
+    .sponsor-page {
+      padding-top: var(--space-7);
+    }
+
+    .sponsor-head h1 {
+      font-size: 1.875rem;
+    }
+
+    .use-list div {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>
