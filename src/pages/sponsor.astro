@@ -1,46 +1,22 @@
 ---
 import Base from "../layouts/Base.astro";
 import Button from "../ui/components/Button.astro";
+import IconArrowRight from "../ui/icons/IconArrowRight.astro";
 import { SITE, SPONSOR } from "../lib/config";
 
 const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
 ---
 
-<Base
-  title="支持"
-  description={`支持 ${SITE.title} 持续维护开源工具、AI 应用与技术内容`}
->
+<Base title="支持" description={`支持 ${SITE.title} 的开源工具与技术内容`}>
   <div class="sponsor-page">
     <div class="container sponsor-container">
       <header class="sponsor-head">
-        <p class="sponsor-eyebrow">支持开放创作</p>
-        <h1>支持持续创作</h1>
-        <p>
-          我在维护开源开发工具、AI 应用和技术博客。如果这些工作对你有帮助，
-          可以通过赞助支持它们继续迭代。
+        <p class="sponsor-eyebrow">随缘支持</p>
+        <h1>觉得有用，就支持一下</h1>
+        <p class="sponsor-copy">
+          我会继续做开源工具、AI 应用和技术内容。要是刚好帮到了你，
+          可以随手支持一点，让我赚点零花钱。
         </p>
-      </header>
-
-      <section class="sponsor-section" aria-labelledby="use-title">
-        <h2 id="use-title">赞助会用于</h2>
-        <div class="use-list">
-          <div>
-            <strong>基础设施</strong>
-            <span>域名、托管、测试服务与必要的开发资源</span>
-          </div>
-          <div>
-            <strong>开源维护</strong>
-            <span>修复问题、完善文档、发布可验证的软件包</span>
-          </div>
-          <div>
-            <strong>技术内容</strong>
-            <span>记录真实项目中的设计决策、失败经验与实践方法</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="sponsor-section" aria-labelledby="channel-title">
-        <h2 id="channel-title">赞助渠道</h2>
         {
           hasSponsorChannel ? (
             <div class="channel-actions">
@@ -49,8 +25,11 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
                   href={SPONSOR.afdian}
                   target="_blank"
                   rel="noopener noreferrer"
+                  size="lg"
+                  class="sponsor-cta"
                 >
-                  通过爱发电支持
+                  去爱发电支持
+                  <IconArrowRight slot="icon-right" size={16} />
                 </Button>
               )}
               {SPONSOR.github && (
@@ -61,6 +40,7 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
                   variant="outline"
                 >
                   通过 GitHub Sponsors 支持
+                  <IconArrowRight slot="icon-right" size={16} />
                 </Button>
               )}
             </div>
@@ -70,18 +50,10 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
             </p>
           )
         }
-      </section>
-
-      <section
-        class="sponsor-section sponsor-note"
-        aria-labelledby="principle-title"
-      >
-        <h2 id="principle-title">赞助原则</h2>
-        <p>
-          赞助完全自愿，不影响开源功能的可用性，也不代表购买功能优先级或商业支持。
-          项目路线仍以实际问题、维护能力和公开讨论为依据。
+        <p class="sponsor-note">
+          完全自愿，量力而行；不附带功能优先级或商业服务。
         </p>
-      </section>
+      </header>
     </div>
   </div>
 </Base>
@@ -96,8 +68,7 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
   }
 
   .sponsor-head {
-    padding-bottom: var(--space-7);
-    border-bottom: 1px solid var(--border-light);
+    padding-bottom: var(--space-8);
   }
 
   .sponsor-eyebrow {
@@ -115,57 +86,32 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
     letter-spacing: 0;
   }
 
-  .sponsor-head p,
-  .sponsor-note p {
+  .sponsor-copy {
     max-width: 640px;
     color: var(--text-secondary);
     font-size: 1rem;
     line-height: 1.8;
   }
 
-  .sponsor-section {
-    padding: var(--space-7) 0;
-    border-bottom: 1px solid var(--border-light);
-  }
-
-  .sponsor-section:last-child {
-    border-bottom: 0;
-  }
-
-  .sponsor-section h2 {
-    margin-bottom: var(--space-5);
-    font-size: 1.0625rem;
-  }
-
-  .use-list {
-    display: grid;
-    gap: 0;
-  }
-
-  .use-list div {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: var(--space-5);
-    padding: var(--space-4) 0;
-    border-top: 1px solid var(--border-light);
-  }
-
-  .use-list strong {
-    color: var(--text-primary);
-    font-size: 0.9375rem;
-  }
-
-  .use-list span,
-  .channel-pending {
-    color: var(--text-secondary);
-    font-size: 0.9375rem;
-    line-height: 1.7;
-  }
-
   .channel-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  :global(.sponsor-cta) {
+    min-height: 48px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+  }
+
+  .sponsor-note,
+  .channel-pending {
+    margin-top: var(--space-4);
+    color: var(--text-tertiary);
+    font-size: 0.8125rem;
+    line-height: 1.6;
   }
 
   .channel-pending {
@@ -182,9 +128,9 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
       font-size: 1.875rem;
     }
 
-    .use-list div {
-      grid-template-columns: 1fr;
-      gap: var(--space-2);
+    .channel-actions,
+    :global(.sponsor-cta) {
+      width: 100%;
     }
   }
 </style>
