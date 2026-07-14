@@ -1,8 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
-import IconGitHub from "../components/icons/IconGitHub.astro";
-import IconStar from "../components/icons/IconStar.astro";
-import IconArrowRight from "../components/icons/IconArrowRight.astro";
+import IconGitHub from "../ui/icons/IconGitHub.astro";
+import IconStar from "../ui/icons/IconStar.astro";
+import IconArrowRight from "../ui/icons/IconArrowRight.astro";
 import { fetchGitHubProjects, PROJECT_GROUPS } from "../lib/projects";
 
 const group = await fetchGitHubProjects("qinquan-ai");
