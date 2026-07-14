@@ -26,7 +26,6 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
                   target="_blank"
                   rel="noopener noreferrer"
                   size="lg"
-                  class="sponsor-cta"
                 >
                   去爱发电支持
                   <IconArrowRight slot="icon-right" size={16} />
@@ -37,6 +36,7 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
                   href={SPONSOR.github}
                   target="_blank"
                   rel="noopener noreferrer"
+                  size="lg"
                   variant="outline"
                 >
                   通过 GitHub Sponsors 支持
@@ -60,7 +60,7 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
 
 <style>
   .sponsor-page {
-    padding: var(--space-8) 0 var(--space-9);
+    padding: var(--space-12) 0 var(--space-16);
   }
 
   .sponsor-container {
@@ -77,38 +77,35 @@ const hasSponsorChannel = Boolean(SPONSOR.afdian || SPONSOR.github);
     font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .sponsor-head h1 {
     margin-bottom: var(--space-4);
-    font-size: 2.25rem;
-    letter-spacing: 0;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    font-weight: 800;
   }
 
   .sponsor-copy {
     max-width: 640px;
     color: var(--text-secondary);
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.8;
   }
 
   .channel-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
-    margin-top: var(--space-6);
-  }
-
-  :global(.sponsor-cta) {
-    min-height: 48px;
-    border-radius: var(--radius-md);
-    text-decoration: none;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
   }
 
   .sponsor-note,
   .channel-pending {
-    margin-top: var(--space-4);
+    margin-top: var(--space-6);
     color: var(--text-tertiary);
     font-size: 0.8125rem;
     line-height: 1.6;

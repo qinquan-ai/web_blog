@@ -5,7 +5,7 @@
 :root {
   /* --- 字体系统 --- */
   --font-sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Microsoft YaHei", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 
@@ -123,7 +123,7 @@ h4,
 h5,
 h6 {
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2; /* 将 line-height 稍微收紧至 1.2，确保字重和行高极其稳固 */
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
@@ -131,6 +131,7 @@ h6 {
 h1 {
   font-size: 2.5rem;
   letter-spacing: -0.03em;
+  line-height: 1.15; /* 大标题强制使用 1.15 行高锁定 */
 }
 h2 {
   font-size: 1.75rem;

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Button from "../ui/components/Button.astro";
 
 const IDEAS = [
   {
@@ -139,9 +140,13 @@ const IDEAS = [
                         placeholder="留下邮箱，当项目有进展或发布时通知你..."
                         required
                       />
-                      <button type="submit" class="idea-submit-btn">
+                      <Button
+                        type="submit"
+                        class="idea-submit-btn"
+                        size="md"
+                      >
                         我感兴趣
-                      </button>
+                      </Button>
                     </div>
                   </form>
 
@@ -564,38 +569,20 @@ const IDEAS = [
     color: var(--text-primary);
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 8px 14px;
+    border-radius: 999px; /* 使用 999px 完美药丸圆角，对齐 Button */
+    padding: 8px 18px; /* 微调内边距使其高度与 md Button 完美对齐 */
     outline: none;
     transition: all var(--duration-fast);
   }
 
   .idea-email-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.08);
   }
 
-  .idea-submit-btn {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--bg-primary);
-    background: var(--text-primary);
-    border: 1px solid var(--text-primary);
-    border-radius: var(--radius-md);
-    padding: 8px 18px;
-    cursor: pointer;
-    transition: all var(--duration-fast);
-    white-space: nowrap;
-  }
-
-  .idea-submit-btn:hover {
-    opacity: 0.9;
-  }
-
-  .idea-submit-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  /* 提交按钮容器（复用了通用 Button，这里只需控制它不要被压缩即可） */
+  :global(.idea-submit-btn) {
+    flex-shrink: 0;
   }
 
   /* 状态反馈提示 */

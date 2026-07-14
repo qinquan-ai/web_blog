@@ -7,11 +7,10 @@ import IconMessage from "../ui/icons/IconMessage.astro";
   <div id="comments-loader" class="comments-loader">
     <Button
       id="load-comments-btn"
-      variant="secondary"
+      variant="primary"
       size="lg"
-      class="capsule-btn"
     >
-      <IconMessage slot="icon-left" size={20} />
+      <IconMessage slot="icon-left" size={18} />
       加载评论
     </Button>
   </div>
@@ -84,26 +83,6 @@ import IconMessage from "../ui/icons/IconMessage.astro";
     display: flex;
     justify-content: center;
     padding: var(--space-4) 0;
-  }
-
-  /* 胶囊状按钮样式 */
-  .capsule-btn {
-    border-radius: 9999px !important;
-    padding: 14px 32px !important;
-    font-weight: 400 !important;
-    letter-spacing: 0.02em;
-    background: var(--bg-secondary) !important;
-    border: 1px solid var(--border-light) !important;
-    transition: all 0.25s var(--ease-out) !important;
-    font-size: 0.9375rem !important;
-    line-height: 1;
-  }
-
-  .capsule-btn:hover {
-    transform: translateY(-1px);
-    background: var(--bg-primary) !important;
-    border-color: var(--border) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
   }
 
   .comments-container.hidden {
