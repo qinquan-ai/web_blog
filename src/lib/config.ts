@@ -17,6 +17,7 @@ export const SITE: Site = {
   douyin: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
   csdn: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
   dynamicOgImage: true,
+  logoMark: "Q",
   editPost: {
     enabled: true,
     text: "在 GitHub 上编辑",

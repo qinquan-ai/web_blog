@@ -1,5 +1,5 @@
 ---
-import Base from "../layouts/Base.astro";
+import Base from "../ui/layouts/Base.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import { SITE } from "../lib/config";
 ---
@@ -11,7 +11,7 @@ import { SITE } from "../lib/config";
         <!-- Left: identity -->
         <div class="about-identity">
           <div class="avatar-wrap">
-            <div class="avatar">{SITE.title.charAt(0)}</div>
+            <div class="avatar">{SITE.logoMark ?? SITE.title.charAt(0)}</div>
           </div>
           <h1 class="about-name">{SITE.title}</h1>
           <p class="about-tagline text-secondary">

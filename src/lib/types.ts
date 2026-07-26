@@ -13,6 +13,7 @@ export interface Site {
   douyin?: string;
   csdn?: string;
   dynamicOgImage?: boolean;
+  logoMark?: string;
   editPost?: {
     enabled: boolean;
     text: string;
