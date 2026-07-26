@@ -1,9 +1,9 @@
 ---
 import "../styles/global.css";
+import "../ui/components/CodeBlock/CodeBlock.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Search from "../components/Search.astro";
-import CodeCopy from "../components/CodeCopy.astro";
 import { SITE } from "../lib/config";
 
 interface Props {
@@ -96,6 +96,5 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
     </main>
     <Footer />
     <Search />
-    <CodeCopy />
   </body>
 </html>

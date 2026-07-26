@@ -1,0 +1,106 @@
+/* ============================================
+   CodeBlock 原语样式
+   -------------------------------------------
+   - 该样式只作用于 Shiki 生成的 .astro-code 容器，
+     并由 [data-theme] 在亮/暗之间切换显示的 Shiki 主题。
+   - 实际 button 由 rehype 插件在 build 时静态注入，
+     不再依赖运行时 <script>。
+   ============================================ */
+
+:root {
+  /* CodeBlock 自身的浅色边框 / 圆角 — 用站点既有 token */
+  --codeblock-border: var(--border-light);
+  --codeblock-radius: var(--radius-md);
+  --codeblock-padding: var(--space-5);
+  --codeblock-bg: transparent;       /* Shiki 自带背景，不覆盖 */
+  --codeblock-font-mono: var(--font-mono);
+  --codeblock-copy-btn-size: 0.75rem;
+}
+
+[data-theme='dark'] {
+  --codeblock-border: #2a323c;
+}
+
+/* 容器：让 <pre> 看起来像卡片 */
+.code-block {
+  position: relative;
+  margin: var(--space-5) 0;
+  border: 1px solid var(--codeblock-border);
+  border-radius: var(--codeblock-radius);
+  overflow: hidden;          /* 让 Shiki 背景圆角生效 */
+  background: transparent;
+}
+
+/* Shiki 容器 <pre> 自带 inline style 给出 light/dark 背景，
+   不要在这里再覆盖背景。容器只负责 padding/圆角/字体。 */
+.code-block pre.astro-code,
+.code-block pre {
+  margin: 0;
+  padding: var(--codeblock-padding);
+  overflow-x: auto;
+  font-family: var(--codeblock-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.code-block pre code {
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* 主题切换：Shiki 在每个元素 inline style 上挂 light + dark 双色
+   (light 是默认 color/bg，dark 存在 --shiki-dark / --shiki-dark-bg)。
+   站点日间不动；夜间用 var(--shiki-dark*) 覆盖默认色。 */
+[data-theme='dark'] .code-block pre.astro-code,
+[data-theme='dark'] .code-block pre.astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+/* 复制按钮（由 rehype 注入的 .code-copy 元素） */
+.code-copy {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 10;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  font-size: var(--codeblock-copy-btn-size);
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), background var(--duration-fast),
+              color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.code-block:hover .code-copy,
+.code-copy:focus-visible {
+  opacity: 1;
+}
+
+.code-copy:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.code-copy.is-copied {
+  opacity: 1;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* 移动端常显，避免触摸场景不可达 */
+@media (hover: none) {
+  .code-copy { opacity: 1; }
+}

@@ -1,0 +1,48 @@
+/* ============================================
+   CodeCopy 原语样式
+   -------------------------------------------
+   实际 button 元素由 rehype 插件在 build 时注入，
+   该样式负责它的外观。CodeBlock.css 也保留一份
+   兼容引用，两个文件可被独立 import。
+   ============================================ */
+.code-copy {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), background var(--duration-fast),
+              color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.code-block:hover .code-copy,
+.code-copy:focus-visible {
+  opacity: 1;
+}
+
+.code-copy:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.code-copy.is-copied {
+  opacity: 1;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (hover: none) {
+  .code-copy { opacity: 1; }
+}
