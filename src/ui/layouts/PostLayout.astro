@@ -9,7 +9,7 @@ import ViewCounter from "../../components/ViewCounter.astro";
 import TableOfContents from "../../components/TableOfContents.astro";
 import PostNav from "../../components/PostNav.astro";
 import EditPost from "../../components/EditPost.astro";
-import { TAGS, SITE } from "../../lib/config";
+import { TAGS, SITE, isPostVisible } from "../../lib/config";
 import { formatDateFull } from "../../lib/utils";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -51,7 +51,7 @@ const tagData = tags.map(t => TAGS.find(tag => tag.slug === t)).filter(Boolean);
 
 const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
 
-const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const allPosts = await getCollection("blog", isPostVisible);
 const relatedPosts = allPosts
   .filter(p => p.slug !== slug)
   .filter(p => p.data.tags?.some((t: string) => tags.includes(t)))

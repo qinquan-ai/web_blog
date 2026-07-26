@@ -4,8 +4,9 @@ import PostCard from "../components/PostCard.astro";
 import IconArrowRight from "../ui/icons/IconArrowRight.astro";
 import { getCollection } from "astro:content";
 import { enrichPostsWithReadingTime } from "../lib/utils";
+import { isPostVisible } from "../lib/config";
 
-const rawPosts = (await getCollection("blog", ({ data }) => !data.draft))
+const rawPosts = (await getCollection("blog", isPostVisible))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 5);
 

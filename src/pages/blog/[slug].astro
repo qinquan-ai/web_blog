@@ -2,9 +2,10 @@
 import PostLayout from "../../ui/layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import type { GetStaticPaths } from "astro";
+import { isPostVisible } from "../../lib/config";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  const posts = (await getCollection("blog", isPostVisible)).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
 

@@ -1,9 +1,10 @@
 import type { APIRoute, GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { isPostVisible } from "../../../lib/config";
 import { generatePostOgImage } from "../../../utils/og-templates";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const posts = await getCollection("blog", isPostVisible);
   return posts.map(post => ({
     params: { slug: post.slug },
     props: {

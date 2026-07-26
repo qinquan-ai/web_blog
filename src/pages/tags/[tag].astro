@@ -3,11 +3,11 @@ import Base from "../../ui/layouts/Base.astro";
 import PostCard from "../../components/PostCard.astro";
 import BackLink from "../../ui/components/BackLink/BackLink.astro";
 import { getCollection } from "astro:content";
-import { TAGS } from "../../lib/config";
+import { TAGS, isPostVisible } from "../../lib/config";
 import { enrichPostsWithReadingTime } from "../../lib/utils";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const posts = await getCollection("blog", isPostVisible);
   return TAGS.map(tag => ({
     params: { tag: tag.slug },
     props: {

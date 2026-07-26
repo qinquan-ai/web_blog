@@ -45,3 +45,19 @@ export const TAGS: Tag[] = [
 export function getTagBySlug(slug: string): Tag | undefined {
   return TAGS.find(tag => tag.slug === slug);
 }
+
+/**
+ * 显式隐藏的 slug 列表（无论 frontmatter 任何状态都不进 dist）。
+ * 与 `data.draft === true` 叠加生效，二选一即隐藏。
+ * 适用场景：临时下架、敏感内容、客户交付脱敏存档。
+ */
+export const HIDDEN_SLUGS: readonly string[] = [
+  "shipping-an-ai-video-workflow",
+];
+
+/** 统一过滤：draft 或 HIDDEN_SLUGS 任一命中即不露出。 */
+export function isPostVisible(post: { slug: string; data: { draft?: boolean } }): boolean {
+  if (HIDDEN_SLUGS.includes(post.slug)) return false;
+  if (post.data.draft === true) return false;
+  return true;
+}
