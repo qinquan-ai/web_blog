@@ -1,6 +1,11 @@
 ---
 import "../styles/global.css";
 import "../ui/components/CodeBlock/CodeBlock.css";
+import "../ui/components/TagChip/TagChip.css";
+import "../ui/components/BackLink/BackLink.css";
+import "../ui/components/EmptyState/EmptyState.css";
+import "../ui/components/Button/Button.css";
+import "../ui/components/PageHeader/PageHeader.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Search from "../components/Search.astro";
@@ -76,6 +81,11 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
         const theme = stored || (prefersDark ? "dark" : "light");
         document.documentElement.setAttribute("data-theme", theme);
       })();
+    </script>
+
+    <!-- Code copy: bind .code-copy buttons (rehype-injected) -->
+    <script>
+      import "../scripts/code-copy";
     </script>
     <script
       type="application/ld+json"

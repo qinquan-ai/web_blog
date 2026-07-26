@@ -1,0 +1,79 @@
+---
+/**
+ * Button — 按钮原语
+ *
+ * 样式：Button.css（以 <style is:global> @import 注入，避免类名带 hash）
+ * 用法：
+ *   <Button variant="primary" size="md" href="/x">点击</Button>
+ *   <Button variant="secondary" loading>提交中…</Button>
+ */
+import './Button.css';
+
+interface Props {
+  id?: string;
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  variant?: "primary" | "secondary" | "ghost" | "outline";
+  size?: "sm" | "md" | "lg";
+  class?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  [key: string]: unknown;
+}
+
+const {
+  id,
+  href,
+  type = "button",
+  variant = "primary",
+  size = "md",
+  class: className = "",
+  disabled = false,
+  loading = false,
+  ...rest
+} = Astro.props;
+
+const Element = href ? "a" : "button";
+
+const variants = {
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  ghost: "btn-ghost",
+  outline: "btn-outline",
+};
+
+const sizes = {
+  sm: "btn-sm",
+  md: "btn-md",
+  lg: "btn-lg",
+};
+---
+
+<Element
+  id={id}
+  href={href}
+  type={href ? undefined : type}
+  class:list={[
+    "ui-button",
+    variants[variant],
+    sizes[size],
+    className,
+    { "is-loading": loading },
+  ]}
+  disabled={disabled || loading}
+  {...rest}
+>
+  <span class="btn-content">
+    <slot name="icon-left" />
+    <slot />
+    <slot name="icon-right" />
+  </span>
+
+  {
+    loading && (
+      <span class="btn-loader">
+        <span class="spinner" />
+      </span>
+    )
+  }
+</Element>

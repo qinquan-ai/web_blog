@@ -1,0 +1,111 @@
+/* ============================================
+   Button — 按钮原语（4 种 variant × 3 种 size + loading）
+   -------------------------------------------
+   单点真源。所有 .ui-button 相关的视觉外观都集中在本文件。
+   之前以 <style is:global> 写在 Button.astro 里 — 现抽出便于复用。
+   ============================================ */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.ui-button.is-loading .btn-content {
+  opacity: 0;
+}
+
+/* ── Variants ── */
+.ui-button.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+.ui-button.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: var(--shadow-md);
+  opacity: 0.9;
+}
+.ui-button.btn-primary:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+
+.ui-button.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+.ui-button.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  transform: translateY(-1px);
+}
+
+.ui-button.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.ui-button.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.ui-button.btn-outline {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.ui-button.btn-outline:hover:not(:disabled) {
+  border-color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  transform: translateY(-1px);
+}
+
+/* ── Sizes ── */
+.ui-button.btn-sm { padding: 6px 14px;  font-size: 0.8125rem; }
+.ui-button.btn-md { padding: 8px 18px;  font-size: 0.875rem;  }
+.ui-button.btn-lg { padding: 12px 28px; font-size: 0.9375rem; }
+
+/* ── Loading spinner ── */
+.btn-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spinner {
+  width: 1.25em;
+  height: 1.25em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.8s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+.ui-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important;
+  box-shadow: none !important;
+}

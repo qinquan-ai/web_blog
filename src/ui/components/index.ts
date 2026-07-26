@@ -11,4 +11,3 @@
  */
 
 export { default as CodeBlock } from './CodeBlock/CodeBlock.astro';
-export { default as CodeCopy } from './CodeCopy/CodeCopy.astro';

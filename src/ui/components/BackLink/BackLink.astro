@@ -1,0 +1,22 @@
+---
+/**
+ * BackLink — 返回导航
+ *
+ * 外观：src/ui/components/BackLink/BackLink.css
+ * 用法：<BackLink href="/blog" label="返回博客" />
+ */
+import IconArrowLeft from '../../icons/IconArrowLeft.astro';
+import './BackLink.css';
+
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a href={href} class="back-link">
+  <IconArrowLeft />
+  {label}
+</a>

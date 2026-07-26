@@ -1,0 +1,14 @@
+---
+/**
+ * TagChip 占位入口
+ * 实际样式在 TagChip.css。
+ * 业务可以直接 <span class="tag-chip">🎯 Vue</span>，不必经过本组件。
+ * 该文件存在的目的：让 Astro bundler 收集 CSS，未来可扩展为受控组件。
+ */
+import './TagChip.css';
+interface Props { class?: string; }
+const { class: className = '' } = Astro.props;
+---
+<span class:list={['tag-chip', className]}>
+  <slot />
+</span>

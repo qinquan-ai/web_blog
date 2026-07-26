@@ -6,13 +6,13 @@
 import type { Site, Tag } from "./types";
 
 export const SITE: Site = {
-  title: "覃权",
+  title: "交付手记",
   description:
-    "独立产品工程师。记录软件如何从能跑的 Demo，变成能交付、能维护的产品。",
+    "记录软件如何从能跑的 Demo，变成能交付、能维护的产品。",
   url: "https://qin-blog.pages.dev",
   github: "https://github.com/qinquan-ai",
   email: "qin16778@gmail.com",
-  author: "覃权 / Qin Quan",
+  author: "独立产品工程师",
   google: "mailto:qin16778@gmail.com", // 谷歌邮箱关联
   douyin: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
   csdn: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示

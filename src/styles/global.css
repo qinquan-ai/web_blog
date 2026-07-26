@@ -404,120 +404,17 @@ img {
   font-family: var(--font-mono);
 }
 
-/* --- 统一标签样式 (单点真源) --- */
-.tag-chip {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  padding: 2px 10px;
-  border-radius: 100px;
-  color: var(--text-secondary);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--bg-primary) 85%, var(--text-primary)) 0%,
-    color-mix(in srgb, var(--bg-primary) 96%, var(--text-primary)) 50%,
-    color-mix(in srgb, var(--bg-primary) 88%, var(--text-primary)) 100%
-  );
-  border: 1px solid color-mix(in srgb, var(--text-primary) 15%, transparent);
-  box-shadow:
-    inset 0 1px 1px color-mix(in srgb, var(--bg-primary) 80%, transparent),
-    0 1px 2px rgba(0, 0, 0, 0.04);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition: all var(--duration-fast);
-  text-decoration: none; /* For link tags */
-}
-
-a.tag-chip:hover,
-.post-card-link:hover .tag-chip {
-  color: var(--text-primary);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--bg-primary) 75%, var(--text-primary)) 0%,
-    color-mix(in srgb, var(--bg-primary) 90%, var(--text-primary)) 50%,
-    color-mix(in srgb, var(--bg-primary) 80%, var(--text-primary)) 100%
-  );
-  border-color: color-mix(in srgb, var(--text-primary) 25%, transparent);
-  box-shadow:
-    inset 0 1px 1px color-mix(in srgb, var(--bg-primary) 80%, transparent),
-    0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-/* --- 返回导航 (单点真源) --- */
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  text-decoration: none;
-  margin-bottom: var(--space-6);
-  transition: color var(--duration-fast);
-}
-.back-link:hover {
-  color: var(--text-primary);
-  opacity: 1;
-}
-
-/* --- 空状态 (单点真源) --- */
-.empty-state {
-  padding: var(--space-9) 0;
-  text-align: center;
-}
-
-/* --- 按钮 (单点真源) --- */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 22px;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  border-radius: var(--radius-md);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all var(--duration-fast);
-}
-.btn-primary:hover {
-  opacity: 0.85;
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 22px;
-  background: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all var(--duration-fast);
-}
-.btn-secondary:hover {
-  border-color: var(--text-tertiary);
-  opacity: 1;
-}
-
-/* --- 页面标题区 (单点真源) --- */
-.page-header {
-  margin-bottom: var(--space-7);
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.page-title {
-  font-size: 2rem;
-  letter-spacing: -0.03em;
-  margin-bottom: var(--space-2);
-}
-
-.page-desc {
-  font-size: 1rem;
-  margin: 0;
-}
+/* ============================================
+   通用 UI 原语
+   -------------------------------------------
+   全部已抽到 src/ui/components/<Name>/<Name>.css：
+     .tag-chip            → TagChip/
+     .back-link           → BackLink/
+     .empty-state         → EmptyState/
+     .btn-primary/secondary/ghost/outline + .ui-button → Button/
+     .page-header / .page-title / .page-desc → PageHeader/
+   这里只保留 :focus-visible 等极少量跨原语通用的样式。
+   ============================================ */
 
 /* ============================================
    Pagefind UI — 复用全站设计系统

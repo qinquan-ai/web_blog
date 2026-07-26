@@ -1,0 +1,20 @@
+/* ============================================
+   BackLink — 返回导航
+   -------------------------------------------
+   单点真源。BackLink.astro 也用同一个 .back-link。
+   ============================================ */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-decoration: none;
+  margin-bottom: var(--space-6);
+  transition: color var(--duration-fast);
+}
+
+.back-link:hover {
+  color: var(--text-primary);
+  opacity: 1;
+}
