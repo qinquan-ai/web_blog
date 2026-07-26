@@ -4,57 +4,61 @@ import Button from "../ui/components/Button.astro";
 
 const IDEAS = [
   {
-    title: "《独立 AI 实践者的全栈开发与商业化生存指南》",
-    slug: "ai-indie-dev-guide",
-    type: "电子书",
-    stage: "验证中",
+    title: "App Director — 可编排的产品演示视频工作流",
+    slug: "app-director",
+    type: "产品实验",
+    stage: "原型验证",
     stageColor: "var(--accent)",
-    desc: "面向程序员的 AI 提效与副业实战小册。不讲高深理论，只探讨如何结合 LLM + Cursor/Cline 极速构建产品、优化架构、自动化部署，并打通变现闭环的实用指南。",
+    desc: "把真实或高还原的软件界面组织成可编排的视频场景，用统一时间线控制倾斜、运镜、聚焦、高光和字幕。目前正以 BossHelper 与 TraceLink 两支演示作为原型样本。",
     highlights: [
-      "基于真实 AI 辅助全链路实战案例",
-      "Cursor & Cline 最佳工程提效实践",
-      "前后端/轻量级数据库极简部署与运维",
-      "海外及国内主流支付渠道与变现路径"
-    ]
+      "React / HTML 高还原界面作为可控视频场景",
+      "Remotion 统一帧时钟、镜头、高光与字幕",
+      "HyperFrames 处理网页片段与组件级微调",
+      "验证同一套镜头脚本能否迁移到不同软件演示",
+    ],
   },
   {
-    title: "Tracelink — 开发期全栈与 AI 代理链路追踪系统",
+    title: "TraceLink — 开发期全栈与 AI Agent 链路追踪",
     slug: "tracelink-observability",
-    type: "开发工具",
-    stage: "原型设计",
-    stageColor: "#f59e0b",
-    desc: "在本地开发 AI Agent 或是全栈应用时，是否经常为混乱的请求链和 AI 决策偏差头疼？Tracelink 能够轻松收集全栈跨端跨服务请求，并输出优雅的 NDJSON/可视化的分布式追踪 Spans。",
+    type: "开源开发工具",
+    stage: "公开维护中",
+    stageColor: "#16a34a",
+    desc: "用于本地开发期追踪真实请求、工作流和 AI Agent 的运行路径。JavaScript 与 Python SDK 遵循同一份数据协议，并由本地 Receiver 和 Dashboard 汇总展示。",
     highlights: [
-      "零侵入式开发期全栈 Trace 自动收集",
-      "AI 代理提示词与 Tool Call 链条可视化追溯",
-      "极轻量的开发面板，实时渲染瀑布图",
-      "全链路调用耗时与异常流向一目了然"
-    ]
+      "JavaScript / Python SDK 共享 TraceLog 协议",
+      "NDJSON 落盘、SSE 实时推送与 Scope 控制",
+      "日志、实时调用图、链路导图与时间线看板",
+      "追踪组件故障时不改变被调试应用的行为",
+    ],
   },
   {
-    title: "Astro Pagefind Plus 静态搜索集成增强包",
-    slug: "astro-pagefind-plus",
-    type: "开源包",
-    stage: "构思中",
-    stageColor: "#86868b",
-    desc: "静态博客的搜索集成往往配置繁琐。这个增强包将为你提供开箱即用的 Web Component 搜索框、完美的深色模式适配、键盘快捷键支持，以及在部署端自动生成 pagefind 索引的 Astro 集成插件。",
+    title: "BossHelper — 连接真实浏览器的岗位信息助手",
+    slug: "boss-helper",
+    type: "开源浏览器工具",
+    stage: "已发布 · 维护中",
+    stageColor: "#0f766e",
+    desc: "通过 Chrome DevTools Protocol 连接用户已经打开的 Chrome 或 Edge，读取页面中已经渲染的岗位卡片，为个人研究和求职信息整理提供本地 GUI 与 CLI。",
     highlights: [
-      "支持快捷键（如 ⌘K / Ctrl+K）一键唤起",
-      "原生适配 Astro View Transitions 页面转场",
-      "完美支持中英文混合搜索与关键词高亮",
-      "全自适应设计，可无缝融入任何现有主题"
-    ]
-  }
+      "复用用户自己的浏览器会话，不直接请求平台接口",
+      "从 DOM 与 Vue 组件树读取已经呈现的数据",
+      "FastAPI 本地服务与 Vue 3 可视化界面",
+      "保留 CLI、频率控制与本地导出能力",
+    ],
+  },
 ];
 ---
 
-<Base title="想法孵化器" description="独立 AI 实践者的创意与副业构想，你的投票将决定它们是否会被付诸实现。">
+<Base
+  title="产品实验室"
+  description="覃权正在维护和验证的软件产品；你的兴趣登记会帮助我判断下一步投入。"
+>
   <div class="ideas-page">
     <div class="container container--wide">
       <header class="page-header">
-        <h1 class="page-title">想法孵化器</h1>
+        <h1 class="page-title">产品实验室</h1>
         <p class="page-desc text-secondary">
-          这是我的创意与副业产品实验室。根据《软技能》的 MVP 验证方法，这些想法的实现优先级将完全由你的投票（订阅兴趣）决定。
+          这里放已经公开维护的工具，也放正在验证的产品原型。兴趣登记不是预售，
+          它会帮助我判断文档、演示和下一轮开发应该优先投入在哪里。
         </p>
       </header>
 
@@ -67,7 +71,6 @@ const IDEAS = [
               data-slug={idea.slug}
               style={`--stage-color: ${idea.stageColor}`}
             >
-              <!-- 1. 折叠预览态 (Collapsed Preview) -->
               <div class="collapsed-preview">
                 <span class="vertical-tag">{idea.type}</span>
                 <h2 class="vertical-title">{idea.title}</h2>
@@ -88,7 +91,6 @@ const IDEAS = [
                 </div>
               </div>
 
-              <!-- 2. 展开详静态 (Expanded Details) -->
               <div class="expanded-content">
                 <div class="card-header">
                   <span class="type-tag">{idea.type}</span>
@@ -128,7 +130,11 @@ const IDEAS = [
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                     </svg>
                     <span>
-                      已有 <strong class="count-value" id={`count-${idea.slug}`}>0</strong> 人感兴趣
+                      已有{" "}
+                      <strong class="count-value" id={`count-${idea.slug}`}>
+                        0
+                      </strong>{" "}
+                      人感兴趣
                     </span>
                   </div>
 
@@ -140,18 +146,15 @@ const IDEAS = [
                         placeholder="留下邮箱，当项目有进展或发布时通知你..."
                         required
                       />
-                      <Button
-                        type="submit"
-                        class="idea-submit-btn"
-                        size="md"
-                      >
+                      <Button type="submit" class="idea-submit-btn" size="md">
                         我感兴趣
                       </Button>
                     </div>
                   </form>
 
                   <div class="idea-success-msg" style="display: none;">
-                    <span class="success-icon">✓</span> 登记成功！感谢你的支持与关注。
+                    <span class="success-icon">✓</span>{" "}
+                    登记成功！感谢你的支持与关注。
                   </div>
                   <div class="idea-error-msg" style="display: none;" />
                 </div>
@@ -162,7 +165,7 @@ const IDEAS = [
       </div>
 
       <p class="privacy-note text-tertiary">
-        * 我们绝不会向第三方泄露你的邮箱地址，也绝不发送任何垃圾邮件。登记仅用于评估产品热度，谢谢你的信任。
+        * 邮箱仅用于对应项目的重要进展通知，不会出售或提供给第三方。
       </p>
     </div>
   </div>
@@ -172,31 +175,42 @@ const IDEAS = [
   import { supabase } from "../lib/supabase";
 
   async function initIdeas() {
-    const cards = document.querySelectorAll(".idea-card");
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".idea-card:not([data-initialized])"
+      )
+    );
     if (!cards.length) return;
 
+    cards.forEach(card => {
+      card.dataset.initialized = "true";
+    });
+
     // 1. Bind Card Expanding Click Handler
-    cards.forEach((card) => {
+    cards.forEach(card => {
       card.addEventListener("click", () => {
         if (card.classList.contains("active")) return;
-        cards.forEach((c) => c.classList.remove("active"));
+        cards.forEach(c => c.classList.remove("active"));
         card.classList.add("active");
       });
     });
 
     // 2. Fetch and initialize counts & forms
-    cards.forEach(async (card) => {
-      const htmlCard = card as HTMLElement;
-      const slug = htmlCard.dataset.slug;
+    cards.forEach(async card => {
+      const slug = card.dataset.slug;
       if (!slug) return;
 
       const countEl = document.getElementById(`count-${slug}`);
       const collCountEl = document.getElementById(`collapsed-count-${slug}`);
-      const form = htmlCard.querySelector(".idea-form") as HTMLFormElement;
-      const emailInput = htmlCard.querySelector(".idea-email-input") as HTMLInputElement;
-      const submitBtn = htmlCard.querySelector(".idea-submit-btn") as HTMLButtonElement;
-      const successEl = htmlCard.querySelector(".idea-success-msg") as HTMLElement;
-      const errorEl = htmlCard.querySelector(".idea-error-msg") as HTMLElement;
+      const form = card.querySelector(".idea-form") as HTMLFormElement;
+      const emailInput = card.querySelector(
+        ".idea-email-input"
+      ) as HTMLInputElement;
+      const submitBtn = card.querySelector(
+        ".idea-submit-btn"
+      ) as HTMLButtonElement;
+      const successEl = card.querySelector(".idea-success-msg") as HTMLElement;
+      const errorEl = card.querySelector(".idea-error-msg") as HTMLElement;
 
       // Fetch count from Supabase
       if (import.meta.env.PUBLIC_SUPABASE_URL) {
@@ -224,7 +238,7 @@ const IDEAS = [
       }
 
       // Form submission
-      form?.addEventListener("submit", async (e) => {
+      form?.addEventListener("submit", async e => {
         e.preventDefault();
         e.stopPropagation(); // prevent card re-click bubble
         const email = emailInput.value.trim();
@@ -243,7 +257,8 @@ const IDEAS = [
           if (error) {
             if (error.code === "23505") {
               if (successEl) {
-                successEl.innerHTML = '<span class="success-icon">✓</span> 你已经登记过该想法的兴趣啦，谢谢支持！';
+                successEl.innerHTML =
+                  '<span class="success-icon">✓</span> 你已经登记过该想法的兴趣啦，谢谢支持！';
                 successEl.style.display = "block";
               }
               if (form) form.style.display = "none";
@@ -257,7 +272,9 @@ const IDEAS = [
             if (form) form.style.display = "none";
 
             // Increment local displays
-            const newVal = ((parseInt(countEl?.innerText || "0") || 0) + 1).toString();
+            const newVal = (
+              (parseInt(countEl?.innerText || "0") || 0) + 1
+            ).toString();
             if (countEl) countEl.innerText = newVal;
             if (collCountEl) collCountEl.innerText = newVal;
 
@@ -267,7 +284,8 @@ const IDEAS = [
           // eslint-disable-next-line no-console
           console.error("提交登记失败:", err);
           if (errorEl) {
-            const msg = err instanceof Error ? err.message : "登记失败，请稍后重试。";
+            const msg =
+              err instanceof Error ? err.message : "登记失败，请稍后重试。";
             errorEl.innerText = msg;
             errorEl.style.display = "block";
           }

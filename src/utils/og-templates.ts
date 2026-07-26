@@ -21,8 +21,8 @@ function getFont() {
         inter400.byteOffset,
         inter400.byteOffset + inter400.byteLength
       ) as ArrayBuffer,
-      weight: 400,
-      style: "normal",
+      weight: 400 as const,
+      style: "normal" as const,
     },
     {
       name: "Inter",
@@ -30,8 +30,8 @@ function getFont() {
         inter700.byteOffset,
         inter700.byteOffset + inter700.byteLength
       ) as ArrayBuffer,
-      weight: 700,
-      style: "normal",
+      weight: 700 as const,
+      style: "normal" as const,
     },
   ];
 }

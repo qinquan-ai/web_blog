@@ -6,12 +6,13 @@
 import type { Site, Tag } from "./types";
 
 export const SITE: Site = {
-  title: "Qin",
-  description: "独立AI实践者的笔记与思考，帮助遇到同样问题的人",
+  title: "覃权",
+  description:
+    "独立产品工程师。记录软件如何从能跑的 Demo，变成能交付、能维护的产品。",
   url: "https://qin-blog.pages.dev",
   github: "https://github.com/qinquan-ai",
   email: "qin16778@gmail.com",
-  author: "Qin",
+  author: "覃权 / Qin Quan",
   google: "mailto:qin16778@gmail.com", // 谷歌邮箱关联
   douyin: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
   csdn: "", // 预留：待账号创建后填入完整链接，填入后将自动在页脚显示
@@ -34,6 +35,10 @@ export const TAGS: Tag[] = [
   { name: "工具", slug: "tools", color: "#10b981" },
   { name: "踩坑", slug: "pitfalls", color: "#f59e0b" },
   { name: "效率", slug: "efficiency", color: "#ec4899" },
+  { name: "产品工程", slug: "product", color: "#2563eb" },
+  { name: "软件交付", slug: "delivery", color: "#0f766e" },
+  { name: "开源", slug: "open-source", color: "#16a34a" },
+  { name: "视频", slug: "video", color: "#dc2626" },
 ];
 
 export function getTagBySlug(slug: string): Tag | undefined {

@@ -38,6 +38,17 @@ import IconMoon from "../ui/icons/IconMoon.astro";
           <span class="icon-sun"><IconSun /></span>
           <span class="icon-moon"><IconMoon /></span>
         </button>
+        <button
+          class="menu-toggle action-btn"
+          aria-label="打开导航菜单"
+          aria-controls="mobile-nav"
+          aria-expanded="false"
+          id="menu-toggle"
+        >
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -51,6 +62,43 @@ import IconMoon from "../ui/icons/IconMoon.astro";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
   });
+
+  const menuButton = document.getElementById("menu-toggle");
+  const nav = document.querySelector(".site-header .nav");
+
+  if (menuButton && nav && !menuButton.dataset.initialized) {
+    menuButton.dataset.initialized = "true";
+    nav.id = "mobile-nav";
+
+    const closeMenu = () => {
+      nav.classList.remove("is-open");
+      menuButton.classList.remove("is-open");
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", "打开导航菜单");
+    };
+
+    menuButton.addEventListener("click", event => {
+      event.stopPropagation();
+      const willOpen = !nav.classList.contains("is-open");
+      nav.classList.toggle("is-open", willOpen);
+      menuButton.classList.toggle("is-open", willOpen);
+      menuButton.setAttribute("aria-expanded", String(willOpen));
+      menuButton.setAttribute(
+        "aria-label",
+        willOpen ? "关闭导航菜单" : "打开导航菜单"
+      );
+    });
+
+    nav
+      .querySelectorAll("a")
+      .forEach(link => link.addEventListener("click", closeMenu));
+    document.addEventListener("click", event => {
+      if (!nav.contains(event.target as Node)) closeMenu();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMenu();
+    });
+  }
 </script>
 
 <style>
@@ -150,6 +198,34 @@ import IconMoon from "../ui/icons/IconMoon.astro";
     gap: var(--space-3);
   }
 
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .menu-toggle__line {
+    width: 15px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      transform var(--duration-fast),
+      opacity var(--duration-fast);
+  }
+
+  .menu-toggle.is-open .menu-toggle__line:nth-child(1) {
+    transform: translateY(5.5px) rotate(45deg);
+  }
+
+  .menu-toggle.is-open .menu-toggle__line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.is-open .menu-toggle__line:nth-child(3) {
+    transform: translateY(-5.5px) rotate(-45deg);
+  }
+
   .action-btn {
     width: 36px;
     height: 36px;
@@ -180,5 +256,71 @@ import IconMoon from "../ui/icons/IconMoon.astro";
   }
   :global([data-theme="dark"]) .icon-moon {
     display: none;
+  }
+
+  @media (max-width: 720px) {
+    .header-inner {
+      height: 56px;
+    }
+
+    .logo {
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+    }
+
+    .logo-name {
+      white-space: nowrap;
+    }
+
+    .header-right,
+    .header-actions {
+      gap: var(--space-2);
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .nav {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      z-index: 99;
+      display: none;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      padding: 10px max(20px, calc((100vw - 1052px) / 2));
+      background: color-mix(in srgb, var(--bg-primary) 96%, transparent);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav.is-open {
+      display: grid;
+    }
+
+    .nav-link {
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .nav-link::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .theme-toggle {
+      display: none;
+    }
   }
 </style>

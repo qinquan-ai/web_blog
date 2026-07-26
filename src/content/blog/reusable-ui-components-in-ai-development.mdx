@@ -1,0 +1,274 @@
+---
+title: "减弱 UI 的“AI 味”：我怎样用组件复用避免重复造轮子"
+description: "从三个真实项目的组件演进出发，复盘我怎样拆分页面组件、基础控件与设计规则，让 AI 开发更快、更一致，也更少重复造轮子。"
+pubDate: 2026-07-15T21:00:00+08:00
+tags: ["ai", "efficiency", "arch", "tools"]
+draft: false
+---
+
+import { Image } from "astro:assets";
+import componentSites from "../../assets/images/posts/reusable-ui-components-in-ai-development/component-resource-sites.png";
+import iconfontSearch from "../../assets/images/posts/reusable-ui-components-in-ai-development/iconfont-search.png";
+
+用 AI 写前端时，第一版通常很快。
+
+我让它加一个筛选栏，它几分钟就能写完；再加一个弹窗、一张结果表、一个设置面板，也都不难。真正的问题往往在开发继续推进之后：新按钮又带了一套圆角，新弹窗重新写了一遍遮罩和动画，两个下拉框长得很像，交互却不一样。每一块单独看都像那么回事，放到同一个产品里却像从几个网站拼出来的。
+
+这就是我理解的 UI “AI 味”。它不等于渐变、毛玻璃或者大圆角，而是 **局部看起来合理，整体没有同一套规则**。
+
+AI 不会天然厌倦重复代码。只要当前提示词没有告诉它已有组件在哪里，它就很容易针对眼前的需求再生成一份 JSX、CSS 和交互逻辑。功能越多，重复的轮子越多；以后想统一一次圆角、按钮高度或悬浮效果，就要在很多页面里逐个修改。
+
+所以我现在的基本观点很直接：
+
+> 减弱 UI 的“AI 味”，更可靠的办法之一不是继续提示“高级一点、简洁一点”，而是提高复用性，让 AI 在一套已有的视觉词汇和组件 API 里工作。
+
+复用有助于提高开发效率；配合统一的 token、API 和使用规则，也更容易保持一致、简洁和主题统一。更重要的是，它能减少 AI 随着开发进度不断重复造轮子。
+
+## “AI 味”首先是工程问题
+
+很多人会把 AI UI 的问题归结为几种常见样式：紫蓝渐变、发光边框、巨大的标题、悬浮卡片和到处都是的胶囊按钮。这些确实常见，但只删除渐变并不能解决根本问题。
+
+真正让我感觉一个页面“像 AI 拼出来的”，通常是这些细节：
+
+- 同一种主按钮在三个页面有三种高度、圆角和 loading 状态；
+- 输入框、下拉选择器和多选选择器的边框、焦点态不在一条线上；
+- 图标有时来自图标库，有时是 emoji，有时又是 AI 临时画的 SVG；
+- Tooltip、Dropdown、Dialog 各自重写定位、键盘操作和关闭逻辑；
+- 页面为了显得丰富，把每一段内容都包进卡片，最后卡片里还有卡片；
+- 修改主题色时，只改了当前页面，旧页面仍保留另一套颜色。
+
+这些都不是某个 CSS 属性的问题，而是项目没有稳定的公共层。AI 每次只优化当前任务，不会自动替整个产品维护视觉纪律；所谓“去 AI 味”，也就不是让 AI 少写代码，而是先缩小它每次可以自由发挥的范围。
+
+## 一致性不是所有地方都写成一个数值
+
+苹果的设计经常被拿来举例。它的圆角看起来非常统一，但这不意味着所有组件只使用同一个圆角值。不同设备、容器和控件有不同尺寸，新的系统设计还强调内外轮廓之间的同心关系。
+
+真正值得借鉴的是：这些形状不是由每个页面临时决定的，而是被收敛到稳定的组件、模板和规则中。Apple 甚至提供官方 [Design Resources](https://developer.apple.com/design/resources/) 和 [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines)，让设计与开发共同使用同一套语言。
+
+放进自己的项目里，可以先简单到只固定几档值：
+
+```css
+:root {
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --duration-standard: 240ms;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+```
+
+以后 AI 不再现场发明 `11px`、`13px`、`17px`，而是选择 `sm`、`md`、`lg` 或 `pill`。颜色、间距、阴影、字号和动效也可以用同样方式收口。
+
+设计令牌的价值不在于变量写得多，而在于项目只有一个可信入口。一个令牌调整后，真正引用它的组件可以同步变化，这才是主题统一的基础。
+
+## 我怎样拆分大组件和小组件
+
+开发网页前端时，我现在会先把组件分成三层。
+
+第一层是设计令牌：颜色、圆角、间距、字号、阴影、动画时长和缓动。它们决定产品共同的视觉语法。
+
+第二层是可复用的小组件，也就是 UI primitives。它们不理解具体业务，只负责一种稳定的视觉与交互能力，例如：
+
+- `button` → `Button`：处理命令、状态、尺寸和视觉变体；
+- `input` → `Input / TextInput`：处理单行文本输入与校验状态；
+- `checkbox` → `Checkbox`：处理多个独立选项的勾选；
+- 开关 → `Switch / Toggle`：控制一个设置的开与关；
+- `multiselector` → `MultiSelect`：在下拉面板中选择多个选项；
+- 气泡 → `Tooltip`：悬浮或聚焦时显示简短的工具提示；
+- `scope` 不是通用控件名称，更像业务范围，通常由 `Select` 组合。
+
+`Select` 是单选下拉选择器，`MultiSelect` 是多选下拉选择器；`Tooltip` 常译为工具提示或悬浮提示。之前说的 `scope` 可能其实是 `Select`；`scope` 不是标准控件名，在这些项目里更多表示“个人、团队、全部”这类业务范围。
+
+第三层才是大组件，也就是带有业务含义的组合：`ConfigPanel`、`ResultTable`、`ControlBar`、`JobDetailDrawer`、`Toolbar`、`LogPanel`、`CallGraphPanel`。它们可以组合很多小组件，也可以管理请求、筛选和页面状态，但不应该重新画一套 Button 或 Tooltip。
+
+```text
+设计令牌
+  -> Button / Input / Select / MultiSelect / Tooltip
+     -> FilterBar / ConfigPanel / Toolbar
+        -> 页面和完整工作流
+```
+
+这样拆分以后，AI 修改业务时主要动第三层；修改产品视觉时主要动前两层。两种变化不会每次都搅在一起。
+
+## 第一次意识到复用：workflow1
+
+我第一次有意识地收集优秀样式，是在 `workflow1` 里的 `excellent_share_style/` 目录。
+
+```text
+excellent_share_style/
+  button/   GlassPillButton、GeneratingButtonBlack
+  card/     GlassCard、MetallicCard
+  toggle/   PinkToggle、GlassRadioGroup
+  tag/      GlassTag、StatusTag、DurationTag
+  menu/     GlassMenu、GlassDropdownMenu、GlassActionMenu
+  color/    GLOW_STYLES、DARK_GLOW_STYLES
+```
+
+这个阶段做对了一件很重要的事：看到喜欢的样式后，我没有只把 CSS 粘进某个页面，而是开始把差异变成 props。
+
+例如 `PinkToggle` 把尺寸固定为 `sm / md / lg`，一张配置表同时控制轨道、圆点的大小和位移，还能通过 `showStars` 关闭装饰动画。`GlassCard` 把圆角、内边距、顶部光效、液态效果和扫光做成可配置项。`GlassRadioGroup` 更进一步，支持任意数量的选项、图标、后缀、禁用状态、四档尺寸、颜色变体，以及 `bounce` 和 `glass` 两个视觉开关。
+
+这里最成功的是 `GlassRadioGroup`。它后来被作品图库、素材范围、角色广场、音频工作台和多个生成参数面板复用。`glass={false}` 还可以让它适配 sticky 容器，说明它不是只存在于组件目录里，而是真的经受了不同业务场景。
+
+另一个值得保留的习惯，是“小组件 + 业务封装”。`PinkToggle` 只负责开关本身，`MaxToggle` 再组合 Tooltip 和业务标签；`GlassTag` 提供基础外观，`StatusTag`、`DurationTag` 再赋予业务语义。底层组件不用知道“MAX”或“时长”是什么意思。
+
+但回头看，它仍然更像一个优秀样式收藏夹，而不是完整设计系统。Glass、Metallic、Pink、Black 多套美学同时存在；虽然目录已经提供统一出口，业务代码仍混用分类入口和具体文件深路径。部分样式常量抽出来后，实现里又手写了一遍。AI 看到多个近似入口时，仍然可能随机选择。
+
+更典型的教训来自 Menu。早期的 `GlassDropdownMenu` 和 `GlassActionMenu` 自己处理点击外部关闭、Escape 和菜单项交互，后来 Header 里因为点击问题换回了 Radix / shadcn 的 DropdownMenu。
+
+这让我确定了另一条边界：
+
+> 可以让 AI 复刻视觉，但 Dropdown、Dialog、Tooltip 这类复杂交互，优先复用经过验证的行为原语，再覆盖成自己的样式。
+
+## 从组件收藏夹到设计系统：boss-helper
+
+到了 `boss-helper`，我从项目开始时就尝试组件化。目录不再只是收藏几套漂亮效果，而是明确有设计令牌、基础组件和业务组件：
+
+```text
+webui/src/ui/
+  tokens/glass.css
+  components/
+    button/ input/ checkbox/ toggle/
+    card/ dialog/ tag/
+    scope/GlassSelect.vue
+    scope/GlassMultiSelect.vue
+
+webui/src/components/
+  ConfigPanel.vue
+  ControlBar.vue
+  LogConsole.vue
+  ResultTable/
+```
+
+`glass.css` 集中定义了浅色与深色主题、前景色、语义色、玻璃表面，以及前面提到的四档圆角和统一动效。以前调整 UI，需要告诉 AI 去很多组件里寻找相近颜色；现在改一个 token，使用它的基础组件和页面可以同步变化，统一 UI 的成本明显降低。
+
+`GlassMultiSelect` 也把多选需要的完整交互放进一个组件：搜索过滤、选中摘要、清除全部、下拉面板和 `v-model` 更新。业务层只提供 label、options 和当前值，不再为每个筛选器重新写一份状态与样式。
+
+大组件也开始从“什么都做”变成编排层。早期的 `ResultTable.vue` 有 700 多行；后来的 `ResultTable/ResultTable.vue` 只负责组合 `FilterBar`、`JobTable` 和 `JobDetailDrawer`，筛选逻辑被移进 `useJobFilters`。它变短并不是目的，关键是表格、筛选和详情各自有了稳定边界。
+
+如果只比较 `boss-helper` 的 `ui/components` 和 `workflow1` 的 `excellent_share_style`，我认为 **boss-helper 的整体复用性更好**。`workflow1` 的少数组件 API 其实更灵活，`GlassRadioGroup` 也复用得很成功；但 `boss-helper` 第一次给整个产品建立了统一规格，AI 有更明确的默认选择。
+
+它仍然有继续收口的空间：全局 `.btn / .input / .card` 样式与组件同时存在，两个 Spotlight 实现并列，一些组件建好后没有业务消费者。组件存在不等于已经复用，只有被真实页面使用、能够替换旧实现，才算减少了维护面。
+
+## 现在最清楚的一次分层：debug_board
+
+在 `debug_board` 中，目录边界进一步稳定：
+
+```text
+src/ui/components/
+  GlassButton/ GlassInput/ Checkbox/
+  Select/ MultiSelect/ Tooltip/
+  ConfirmDialog/ StatusDot/ Tag/ ...
+
+src/components/
+  ConnectionBar/
+  Toolbar/
+  LogTable/
+  CallGraph/
+```
+
+`src/ui/components` 主要放跨业务可复用的 UI 组件，并从一个统一的 `index.ts` 导出；`src/components` 放日志、工具栏和调用图这类业务组件。业务代码不需要知道每个原语内部文件在哪里，也不会把 `CallGraphPanel` 误当成可以跨产品搬走的基础控件。
+
+这一阶段的 API 也更成熟。`GlassButton` 继承原生 button 属性并使用 `forwardRef`，除了 `size / variant / loading / active`，还会自然透传 `aria-*`、`title` 和事件。Checkbox 支持 `indeterminate` 三态；`SearchInput` 内部组合 `GlassInput`，没有再复制一套输入框样式；`ConfirmDialog` 继续复用已有 Button。
+
+`Tooltip` 尤其能说明“复用的不是外观，而是处理过的细节”。它通过 Portal 挂到 `document.body`，监听滚动和窗口尺寸，在空间不足时翻转方向，同时支持鼠标与键盘焦点，并设置 `aria-describedby`。如果每个图标按钮都让 AI 临时写一个气泡，这些边界条件几乎一定会丢。
+
+顶层大组件更偏向编排：`Toolbar` 组合视图切换、筛选和数据操作，`LogPanel` 负责当前选中项与前后导航，`App.tsx` 只连接几个页面区域。复杂的调用图能力则在组件内部继续分成 Model、Layout、Interaction、Transport、Theme 和 Renderer。组件复用已经从“同一种按钮不要写两遍”，走到了“领域内核也要有稳定契约”。
+
+这套分层也不是终点。`Select`、`TextInput` 目前没有实际消费者，`GlassInput / TextInput / SearchInput` 的选择边界还可以更明确，`ColumnPicker` 这类偏表格领域的组件是否应该留在通用 UI 目录也值得重新判断。下一步不是继续增加组件数量，而是删除没有被验证的原语，并给相近组件写清选择规则。
+
+因此，按目前的整体复用性，我的判断是：
+
+```text
+debug_board > boss-helper > workflow1
+```
+
+这个排序不代表后一个项目一定更漂亮。它比较的是：规则是否集中、入口是否唯一、业务与基础控件是否分开，以及 AI 新增功能时有多少现成能力可以直接使用。
+
+## 我现在会怎样要求 AI 开工
+
+组件化不能只靠目录存在，还要改变 AI 的工作顺序。现在我会把类似下面的约束直接放进项目说明或任务提示中：
+
+```text
+开始实现页面前：
+1. 先搜索 src/ui/components 和统一导出文件。
+2. 已有组件能满足需求时，必须复用，不在业务页面重写样式。
+3. 缺少 loading、disabled、size 或 variant 时，优先扩展原组件。
+4. Dropdown、Dialog、Tooltip 等交互优先使用现有行为原语。
+5. 只有出现新的通用交互，才新增基础组件。
+6. 新组件必须使用现有颜色、圆角、间距和动效 token。
+7. 完成后搜索并替换功能相同的旧实现，避免新旧两套入口并存。
+```
+
+我还会让 AI 先回答三个问题：项目里是否已经有同类组件？这次差异是一个新 `variant`，还是新的业务组件？旧实现能不能被替换或删除？
+
+这三问能挡住很多“为了当前页面再写一份”的冲动。
+
+对于基础控件，我倾向于在第一次需要时就建立稳定 API；对于业务大组件，则等职责和数据流相对明确后再抽取。抽得太早会产生大量只用一次的空壳，抽得太晚又会留下三四份已经漂移的复制代码。
+
+组件目录之外，最好再有一个很小的 UI 展示页，把 Button、Input、Select、Tooltip 等所有尺寸、变体和状态排在一起。它既是人工验收页，也是 AI 可以读取的活文档。圆角或主题一改，哪里不一致会马上暴露。
+
+## 我会从哪里找组件参考
+
+我不会要求 AI 每次从空白开始设计。先找成熟实现，再让它适配项目现有的 token 和 API，通常更快，也更稳定。
+
+<figure>
+  <Image
+    src={componentSites}
+    alt="React Bits、21st.dev 和 Uiverse 三个 UI 组件资源网站"
+  />
+  <figcaption>我的组件参考入口：先挑方向，再收口成项目自己的组件。</figcaption>
+</figure>
+
+- [shadcn/ui](https://ui.shadcn.com/)：适合 Button、Dialog、Dropdown、Tooltip 等基础行为与结构。它更像可复制、可修改的设计系统起点。
+- [React Bits](https://www.reactbits.dev/)：适合文字、背景、卡片和交互动效。它能提供视觉亮点，但同一页面不需要给每个区域都加效果。
+- [21st.dev](https://21st.dev/)：社区维护的 React 组件与模板很多，分类和筛选细，适合快速寻找接近目标的完整区块。
+- [Uiverse](https://uiverse.io/)：适合查看按钮、输入框、Checkbox、Tooltip、Loader 等原子效果，可复制 HTML/CSS、Tailwind 或 React 实现。
+- [iconfont](https://www.iconfont.cn/)：适合查找、管理和下载 SVG 或字体图标，尤其方便补充中文业务场景里的特定图标。
+
+<figure>
+  <Image src={iconfontSearch} alt="iconfont 网站中不同风格的喜欢图标搜索结果" />
+  <figcaption>
+    图标也要进入项目级资源库；不要让每个页面各自挑一套风格。
+  </figcaption>
+</figure>
+
+这些网站是参考库，不是随机拼装库。找到一个心仪的按钮后，我不会让 AI 原样塞进业务页面，而是让它先检查依赖和许可证，再提取真正需要的视觉与交互，改用本项目的 token，并补齐 loading、disabled、focus 和响应式状态。
+
+图标也是一样。搜索到合适的 SVG 后，应该进入统一图标目录或组件封装，固定尺寸、描边宽度和颜色继承方式。否则即使每个图标都很好看，放在一起仍然会有明显的拼接感。
+
+## 把喜欢的样式变成“可复用插件”
+
+在同一个前端项目里，更准确的说法通常是“可复用组件”或“可复用模块”；只有需要独立安装、注册或提供生命周期时，才真的需要做成插件。
+
+但工作方法是一致的。我会把参考样式和下面这类要求一起交给 AI：
+
+```text
+请把这份参考实现改造成当前项目的可复用组件，不要直接粘进业务页。
+
+- 先列出新增依赖与许可证风险；
+- 保留核心视觉，颜色、圆角、间距和动效改用项目 token；
+- API 至少考虑 size、variant、disabled、loading 和 className；
+- 继承并透传原生元素属性与 ref；
+- 复用现有 Dialog、Popover、Tooltip 等行为原语；
+- 展示 default、hover、focus、disabled、loading 和移动端状态；
+- 从统一 index 导出，并替换项目中已有的重复实现。
+```
+
+这里最重要的不是让 AI 把一段代码“包一层组件名”，而是要求它找出稳定部分和可变部分。稳定部分进入组件内部，可变部分才暴露为有限的 props。什么都暴露会让组件失去统一性，什么都写死又无法复用。
+
+## 最后
+
+回头看这三个项目，我对组件化的认识经历了三个阶段：
+
+```text
+workflow1：把喜欢的样式做成可调零件
+boss-helper：给这些零件建立统一规格
+debug_board：规定零件、业务组件和领域内核各自负责什么
+```
+
+复用的价值也不只是少写几行代码。它让一次视觉调整能够传遍整个产品，让交互问题只修一次，让 AI 在新增页面时继承已经做过的判断。
+
+真正减弱 UI “AI 味”的，不是找到一句更厉害的提示词，而是让项目逐渐拥有自己的审美记忆。设计令牌、基础组件、业务组件和明确的复用规则，就是这份记忆最可靠的载体。

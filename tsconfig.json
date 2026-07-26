@@ -7,5 +7,5 @@
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": [".astro/dist"]
+  "exclude": ["dist", "public/pagefind", ".astro/dist"]
 }

@@ -17,6 +17,7 @@ import type { CollectionEntry } from "astro:content";
 interface Props {
   title: string;
   description: string;
+  image?: string;
   pubDate: Date;
   updatedDate?: Date;
   tags?: string[];
@@ -31,6 +32,7 @@ interface Props {
 const {
   title,
   description,
+  image,
   pubDate,
   updatedDate,
   tags = [],
@@ -49,14 +51,16 @@ const tagData = tags.map(t => TAGS.find(tag => tag.slug === t)).filter(Boolean);
 // Only show ToC if there are H2 or H3 headings
 const hasToC = headings.filter(h => h.depth === 2 || h.depth === 3).length > 0;
 
-const allPosts = await getCollection("blog");
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
 const relatedPosts = allPosts
   .filter(p => p.slug !== slug)
   .filter(p => p.data.tags?.some((t: string) => tags.includes(t)))
   .sort((a, b) => {
     const dateA = a.data.pubDate.valueOf();
     const dateB = b.data.pubDate.valueOf();
-    return Math.abs(dateA - pubDate.valueOf()) - Math.abs(dateB - pubDate.valueOf());
+    return (
+      Math.abs(dateA - pubDate.valueOf()) - Math.abs(dateB - pubDate.valueOf())
+    );
   })
   .slice(0, 3);
 
@@ -78,7 +82,7 @@ const jsonLd = {
 };
 ---
 
-<Base title={title} description={description} type="article">
+<Base title={title} description={description} image={image} type="article">
   <script
     type="application/ld+json"
     slot="head"
@@ -86,7 +90,7 @@ const jsonLd = {
   />
   <div class="reading-progress" id="reading-progress"></div>
   <article class="post-layout">
-      <div class="container">
+    <div class="container">
       <!-- Breadcrumb -->
       <Breadcrumb
         crumbs={[
@@ -182,7 +186,7 @@ const jsonLd = {
           )
         }
       </div>
-      <div class="post-content-footer-spacer" />
+      <div class="post-content-footer-spacer"></div>
 
       <!-- Next/Prev Nav -->
       <PostNav prev={prevPost} next={nextPost} />

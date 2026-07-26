@@ -1,0 +1,352 @@
+---
+title: "不会 AE，也能做丝滑动效：Vibe Motion 到底是什么？"
+description: "Vibe Motion 全解析：Remotion vs HyperFrames，以及 Codex 如何通过 npm 包、Skill、MCP 和 Plugin 生成视频。"
+pubDate: 2026-07-15T20:00:00+08:00
+updatedDate: 2026-07-15
+tags: ["video", "ai", "tools", "arch"]
+draft: false
+---
+
+以前做一段十秒钟的产品动效，通常要先打开 AE，创建合成、导入素材、拆图层、拉关键帧，再一点点调整缓动和时间。
+
+现在，我可以直接对 Codex 说：
+
+```text
+让产品窗口从画面下方进入；
+鼠标移动到“开始任务”按钮并点击；
+三秒后放大执行结果；
+最后用一句标题收尾。
+```
+
+Codex 会读取项目，生成 React 或 HTML 动效代码，启动预览，再根据我的反馈修改镜头、节奏和排版。我还可以继续说：“鼠标没有跟住按钮”“这一镜再快半秒”“标题弹得太硬”。
+
+这种用自然语言“导演”代码动效的工作方式，被越来越多人称为 **Vibe Motion**。
+
+它不是传统的文生视频。AI 没有在黑盒里逐帧猜测像素，而是在编写一套真实、可编辑、可以重复渲染的视频程序。标题还是文字，图表还是数据，按钮仍然是 DOM 元素，每一帧都能回到代码中修改。
+
+但刚接触这套工作流时，很容易被一串名字绕晕：Remotion、HyperFrames、npm、Skill、MCP、Plugin，好像每装一个东西，Codex 就多出一种生成视频的能力。
+
+其实它们处在不同层级。理解这些层级，比记住某条安装命令更重要。
+
+## 先说结论：真正生成视频的是 npm 框架
+
+Remotion 和 HyperFrames 主要以 npm 包的形式存在。Skill、MCP 和 Codex Plugin 都是在帮助 AI 使用这些包，它们不是视频引擎本身。
+
+```text
+npm 包
+  = 视频框架、运行时、CLI 和渲染代码
+
+Skill
+  = 官方写给 AI 的操作指南
+
+MCP
+  = AI 查询文档或操作外部工具的接口
+
+Codex Plugin
+  = 把 Skill、MCP、资源和展示信息打包起来
+```
+
+如果把这套系统比作一间工作室：
+
+- npm 包是摄影机、时间线和渲染设备；
+- Skill 是操作手册和制作规范；
+- MCP 是资料查询台或外部控制接口；
+- Plugin 是把这些东西装进 Codex 的工具箱。
+
+删除 Skill 或卸载 Plugin 后，已经写好的 Remotion / HyperFrames 工程仍然可以渲染。反过来，如果项目里没有相应的 npm 工具链，Codex 就算读完全部 Skill，也没有真正执行视频预览和渲染的程序。
+
+## npm 包到底提供了什么
+
+npm 包不只是一条“生成视频”的命令。它提供了一整套供开发者或 Agent 调用的函数、组件、运行时约定和命令行工具。
+
+Remotion 工程通常会用到 `remotion`、`@remotion/cli`、`@remotion/player` 等包。它们提供：
+
+- `Composition`、`Sequence` 等视频结构组件；
+- `useCurrentFrame()`、`interpolate()`、`spring()` 等逐帧动画 API；
+- 图片、音频、视频、字幕与转场组件；
+- Studio 预览、单帧检查和视频渲染命令；
+- Player、服务端渲染与批量生成能力。
+
+HyperFrames 则提供 `hyperframes` CLI，以及 `@hyperframes/core`、`@hyperframes/engine`、`@hyperframes/player` 等包。它们负责：
+
+- 解析 HTML 视频合成与时间信息；
+- 将 GSAP、CSS、Lottie、Three.js 等动画定位到指定帧；
+- 检查、预览、抓取页面帧并编码视频；
+- 提供 Studio、Player、渲染管线与可复用模块。
+
+因此，npm 包才是 Remotion 和 HyperFrames 的主要产品形态。Skill 与 Plugin 可以改善 AI 的使用体验，但不会替代这些运行时代码。
+
+## 一个鼠标动画，普通 React 和 Remotion 差在哪
+
+Remotion 本身就是 React。它不是与 React 平行的另一种语言，而是 **React 加上一套由视频帧驱动的时间模型**。
+
+在普通 React 页面里，一个鼠标通常由真实用户事件驱动：
+
+```tsx
+const [position, setPosition] = useState({ x: 0, y: 0 });
+
+return (
+  <main
+    onPointerMove={event => setPosition({ x: event.clientX, y: event.clientY })}
+  >
+    <Cursor x={position.x} y={position.y} />
+  </main>
+);
+```
+
+这里的画面取决于“用户什么时候移动鼠标”。如果用 CSS transition 或 `requestAnimationFrame()` 自动移动，它又会依赖浏览器的真实时间和机器运行速度。
+
+视频不能依赖这些偶然条件。第 42 帧里的鼠标，无论今天预览、明天渲染，还是换一台电脑，都应该位于同一个坐标。
+
+在 Remotion 里，鼠标不是操作系统的真实光标，而是一个画在视频里的 React 组件。它的位置由当前帧计算：
+
+```tsx
+const frame = useCurrentFrame();
+
+const x = interpolate(frame, [30, 60], [120, 760], {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+});
+
+const y = interpolate(frame, [30, 60], [680, 420], {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+});
+
+return <Cursor style={{ transform: `translate(${x}px, ${y}px)` }} />;
+```
+
+这段代码的含义是：从第 30 帧到第 60 帧，让虚拟鼠标从 `(120, 680)` 移动到 `(760, 420)`。渲染器请求第几帧，React 就计算出那一帧应该呈现的状态。
+
+更可靠的工程不会把 `(760, 420)` 永久写死。按钮会注册一个 React Ref，渲染前测量它的真实边界；鼠标、高光和镜头再共同引用这个目标。按钮宽度或页面布局变化后，鼠标仍然能够跟住它。
+
+这就是框架带来的价值：它不只是帮我画一个鼠标，而是提供了可重复的帧时钟、合成结构、素材组件、预览与渲染环境。
+
+## HyperFrames 怎样做同一件事
+
+如果画面本来就是 HTML 页面，HyperFrames 不要求先把它改写成 React 组件。按钮可以继续是普通 DOM，鼠标也可以是一个 HTML 元素：
+
+```html
+<button id="start-button">开始任务</button>
+<div class="cursor"></div>
+```
+
+动画可以使用熟悉的 GSAP timeline：
+
+```js
+const timeline = gsap.timeline({ paused: true });
+
+timeline.to(".cursor", {
+  x: 760,
+  y: 420,
+  duration: 1,
+  ease: "power2.inOut",
+});
+```
+
+普通网页会让这条 timeline 按真实时间播放。HyperFrames 的关键工作，是通过 Frame Adapter 暂停动画自己的时钟，并在渲染每一帧时把 timeline seek 到对应时间。
+
+所以两套框架解决的是同一个确定性问题，只是入口不同：
+
+```text
+Remotion
+  -> React 根据 currentFrame 计算画面
+
+HyperFrames
+  -> HTML 页面和动画 timeline 被 seek 到目标帧
+```
+
+## AI 已经懂这些框架，为什么还需要 Skill
+
+现在的大模型见过大量 React、HTML、CSS 和动画代码，也通常知道 Remotion 与 HyperFrames 的基本用途。即使不联网、不安装 Skill，Codex 也可能写出一个能运行的初稿。
+
+但“听说过框架”与“稳定地按当前官方规范完成作品”不是一回事。
+
+模型记忆可能来自旧版本、零散教程和不同项目。它可能写出这些问题：
+
+- 在 Remotion 中使用依赖真实时间的动画；
+- 直接给鼠标和高光写死坐标；
+- 使用普通 `<img>` 或不稳定的远程素材；
+- 忘记等待字体、数据或 DOM 测量完成；
+- HyperFrames timeline 没有接入可 seek 的帧时钟；
+- 只看 Studio 预览，没有运行 lint、单帧检查或正式渲染。
+
+Skill 的意义，是把官方当前推荐的项目结构、动画规则、素材处理、验证命令和常见陷阱整理成一份 Agent 可以按需读取的操作指南。
+
+```text
+模型已有知识
+  = 大概知道工具是什么、基本 API 怎么写
+
+官方 Skill
+  = 这次任务应该按什么顺序做、哪些写法不能用、怎样验收
+```
+
+因此，Skill 不是训练集，也不会重新训练模型。它更像在开工前把最新的制作规范放到 Codex 桌上，让 Agent 少走弯路，更快进入可靠的 Vibe Motion 工作循环。
+
+两套官方 Skill 都可以直接安装：
+
+```bash
+# Remotion Agent Skills
+npx skills add remotion-dev/skills
+
+# HyperFrames Agent Skills
+npx skills add heygen-com/hyperframes --full-depth --yes
+```
+
+安装到项目的 Skill 通常位于 `.agents/skills/`。Codex 先看到 Skill 的名称和用途，任务匹配时才会读取完整 `SKILL.md` 以及相关规则，不需要把所有说明永久塞进每一次对话。
+
+## MCP 有用，但没有那么神秘
+
+MCP 的全称是 Model Context Protocol，它让 AI 通过统一协议读取外部上下文或调用工具。
+
+在 Remotion 这条工作流里，常见 MCP 主要用于查询官方文档：
+
+```toml
+[mcp_servers.remotion-documentation]
+command = "npx"
+args = ["-y", "@remotion/mcp@latest"]
+```
+
+它解决的是“当前版本官方文档怎样说”，不是“怎样把 React 渲染成 MP4”。真正渲染视频的仍然是项目中的 Remotion 包与 CLI。
+
+如果 Codex 已经能够访问浏览器、网页搜索或 Playwright，它也可以打开官方文档并查找答案。因此，文档 MCP 并非不可替代。它的优势是入口固定、内容结构化、工具名称明确，Agent 不必每次从搜索结果里判断哪个页面最可信。
+
+MCP 也不一定只查文档。某些产品会把“增加片段”“生成字幕”“修改时间线”做成 MCP 工具，让 Agent 直接操作远端项目。比如 [Vibemotion](https://vibemotion.ai/) 展示的就是“人使用可视化编辑器，AI 通过 MCP 操作同一个项目状态”。这类 MCP 才真正具有编辑动作。
+
+所以判断一个 MCP 有什么价值，不能只看它叫不叫 MCP，而要看服务端究竟提供了哪些工具。
+
+## Remotion 与 HyperFrames 的形态差异
+
+[Remotion](https://www.remotion.dev/) 与 [HyperFrames](https://hyperframes.heygen.com/) 都会通过浏览器和 FFmpeg 将代码变成视频，但它们对“视频源代码应该长什么样”做了不同选择。
+
+| 维度          | Remotion                                      | HyperFrames                                  |
+| ------------- | --------------------------------------------- | -------------------------------------------- |
+| 主要创作形式  | React / TSX 组件                              | HTML / CSS / JavaScript                      |
+| 动画时间      | 组件根据当前帧计算                            | 页面和动画库 seek 到指定帧                   |
+| 主要 npm 入口 | `remotion`、`@remotion/*`                     | `hyperframes`、`@hyperframes/*`              |
+| 现成网页复用  | 通常需要改写 JSX 并接入帧时钟                 | 可以直接清理 HTML 后继续使用                 |
+| 工程优势      | React 组件、类型、参数化和数据逻辑            | DOM、CSS、GSAP 与 Web 动画资产               |
+| 典型场景      | 视频模板、数据视频、复杂产品演示、批量生成    | 网页转视频、产品发布片、短动效、快速视觉实验 |
+| 许可证        | 自定义 Remotion License，商用前需核对当前条款 | Apache 2.0                                   |
+
+### Remotion 的特点
+
+Remotion 把视频当成 React 应用。画面、字幕、时间、数据与镜头都可以变成组件和 props，适合长期维护、参数化以及构建批量视频服务。
+
+如果团队已经使用 React / TypeScript，有现成组件库、复杂业务数据和类型约束，Remotion 往往更自然。它也提供 Player、服务端渲染和成熟的 Lambda 路径。
+
+它的代价是需要遵守 React 与逐帧渲染模型。现成网页、GSAP、Canvas 或 WebGL 代码不能只靠浏览器自然播放，必须显式接入视频帧时钟。
+
+### HyperFrames 的特点
+
+HyperFrames 把一个 HTML 页面当成视频合成。Agent 可以直接使用 HTML、CSS、SVG、Canvas、GSAP、Lottie 和 Three.js，不必先把每个节点翻译成 JSX。
+
+它尤其适合现成网页转视频，以及由 Agent 快速生成视觉动效。对于已经存在的 landing page、产品官网、CodePen 动画或 GSAP timeline，中间改写更少。
+
+如果项目的核心资产本来就是 React 组件和类型化业务逻辑，Remotion 更顺手；如果核心资产是网页和 Web 动画，HyperFrames 通常路径更短。
+
+## Codex 为什么适合成为 Vibe Motion Agent
+
+在我目前的工作流里，Codex 很适合扮演 Vibe Motion Agent。原因不是它内置了某个神奇的视频模型，而是它能把完整开发循环串起来：
+
+```text
+读取需求和项目文件
+  -> 调用匹配的 Skill
+  -> 编写 React 或 HTML
+  -> 安装与调用 npm 工具
+  -> 启动 Studio 或预览页
+  -> 检查截图、单帧和构建结果
+  -> 根据反馈继续修改
+  -> 渲染成片
+```
+
+视频代码仍然由 Remotion 或 HyperFrames 运行。Codex 负责理解意图、写代码、调用工具和反复验收，更接近一位会使用终端和浏览器的动效开发者。
+
+## Codex Plugin 到底打包了什么
+
+Codex Plugin 是分发单位，不是新的渲染层。一个视频插件通常会打包：
+
+```text
+video-plugin/
+  .codex-plugin/
+    plugin.json       # 插件名称、版本和入口
+  skills/             # Remotion / HyperFrames 操作指南
+  .mcp.json           # 可选的文档或工具 MCP
+  assets/             # 图标、模板和参考资源
+```
+
+按照 [Codex Plugin 文档](https://developers.openai.com/codex/plugins)，Plugin 可以组合 Skill、MCP、App 映射、资源与展示信息。它的价值是让用户从插件目录统一安装、启用和分享这些能力。
+
+HyperFrames 在官方仓库中同时提供 Skill 和 Codex Plugin 形态。Remotion 也有官方 [Codex Plugin 仓库](https://github.com/remotion-dev/codex-plugin)与独立的 Agent Skills。
+
+但安装插件并不会让 Codex 与 Remotion“合二为一”。它不会把视频渲染器植入模型，也不会绕过项目依赖。插件安装后，Codex 只是更容易发现相关 Skill、MCP 和资源；真正执行的仍是当前项目里的 npm 包和代码。
+
+## 插件页没有它，也不影响做 Vibe Motion
+
+不同登录方式、Codex 客户端、工作区策略、插件目录来源和本地发行环境，可能会影响插件是否显示或能否启用。使用 API Key、第三方中转服务或某些精简 Windows 环境时，也可能遇到插件页缺失、条目较旧或按钮不可用。
+
+这首先是 Codex 产品入口和分发层的问题，不代表 Remotion / HyperFrames 无法工作。
+
+最直接的替代方案是：
+
+```text
+项目里安装 npm 包
+  +
+项目级 .agents/skills/
+  +
+必要时配置文档 MCP
+```
+
+Codex 一样可以读取 Skill、编写项目并调用 CLI。对于只在一个项目里使用的视频工作流，这种方式往往已经足够。
+
+如果确实希望在插件页统一展示、安装或分享，也可以让 Codex 按官方结构创建一个本地 Plugin，把已有 Skill、MCP 配置和资源包装进去。这里做的是“本地打包”，不是凭空创造一个新视频引擎。
+
+换句话说：
+
+```text
+没有 Plugin
+  != 不能用 Remotion / HyperFrames
+
+没有 npm 运行时
+  = 项目确实无法预览和渲染
+```
+
+## Vibemotion 与 Vibe Motion 不是一回事
+
+小写或带空格的 `Vibe Motion` 通常描述这套自然语言驱动的动效制作方式，底层既可以使用 Remotion，也可以使用 HyperFrames。
+
+[Vibemotion](https://vibemotion.ai/) 则是一个具体产品。它把可视化多轨编辑器与 Agent MCP 放在同一个项目状态上，官网说明其编辑器基于 React 与 Remotion 构建。截至 2026 年 7 月，它仍处于 Early Access。
+
+因此，Vibemotion 是 Vibe Motion 思路的一种产品实现，不是与 Remotion、HyperFrames 并列的第三个底层 npm 视频框架。
+
+## 不会 AE，能做到什么程度
+
+Vibe Motion 特别适合这些画面：
+
+- 产品界面演示与鼠标操作；
+- 动态图表、数据报告和排行榜；
+- 字幕包装、标题动画和信息卡片；
+- 网页、代码、流程图与架构图演示；
+- 同一模板批量替换文案、图片和数据；
+- 需要准确复现、版本管理和持续修改的视频。
+
+它暂时不会让 AE 失去价值。复杂合成、成熟插件特效、人工逐帧雕琢、强依赖视觉直觉的探索，以及大量非结构化实拍素材的精细剪辑，仍然更适合传统视频工具和专业设计师。
+
+真正改变的是第一版成片的门槛。
+
+过去，必须先把想法翻译成图层、关键帧和软件操作；现在，可以先把镜头意图告诉 Codex，再由 Agent 把它翻译成 React、HTML、CSS、GSAP 和逐帧计算。
+
+最后把整套关系压缩成一条链：
+
+```text
+你描述想要的画面
+  -> Codex 读取 Skill，理解官方推荐做法
+  -> 必要时通过 MCP 查询最新文档或操作外部工具
+  -> Codex 编写 Remotion React 或 HyperFrames HTML
+  -> npm 包负责预览、检查、抓帧和渲染
+  -> 浏览器与 FFmpeg 输出视频
+```
+
+Vibe Motion 不是某个插件突然拥有了魔法，而是 Agent、官方指南、代码框架和渲染工具终于被接成了一条足够顺畅的生产链。
+
+AE 时代没有结束。但从现在开始，不会 AE，已经不再等于做不了清晰、丝滑、可复用的视频动效。

@@ -30,14 +30,8 @@ import { SITE } from "../lib/config";
       return;
     }
 
-    interface IdleWindow extends Window {
-      requestIdleCallback?: (
-        cb: () => void,
-        opts?: IdleRequestOptions
-      ) => number;
-    }
     const onIdle =
-      (window as IdleWindow).requestIdleCallback ??
+      window.requestIdleCallback?.bind(window) ??
       ((cb: () => void) => setTimeout(cb, 200));
 
     onIdle(async () => {

@@ -1,0 +1,202 @@
+---
+title: "从 BossHelper 到 TraceLink：我怎样用代码“导演”产品演示视频"
+description: "从 HyperFrames 的 HTML/CSS/GSAP 场景移植，到 Remotion 的逐帧时间线与 DOM/SVG 目标跟踪：两支软件演示视频背后的真实实现。"
+pubDate: 2026-07-15T10:00:00+08:00
+updatedDate: 2026-07-15
+tags: ["video", "product", "tools", "open-source"]
+draft: false
+---
+
+做完 BossHelper 后，我第一次认真尝试用代码制作产品演示视频。
+
+那次实践留下了一个问题：如果换成结构更复杂、同时包含日志、SVG 调用图和详情抽屉的产品，这套方法还能不能复用？
+
+现在第二个样本已经完成。TraceLink 演示成片 65 秒，1920×1080，30fps，共 1950 帧。它不是对着真实界面录一遍屏，而是以真实 Dashboard 源码和 TraceLink 运行数据为依据，在 Remotion 中重新组织成一条可以逐帧控制的故事。
+
+<video
+  controls
+  playsInline
+  preload="metadata"
+  poster="/images/tracelink-agent-guardrail-cover.png"
+  aria-label="TraceLink AI Agent guardrail 演示视频"
+  style={{ width: "100%", aspectRatio: "16 / 9", background: "#000" }}
+>
+  <source src="/videos/tracelink-agent-guardrail-web.mp4" type="video/mp4" />
+  你的浏览器暂不支持 HTML5 视频播放。
+</video>
+
+这次做完后，我对 HyperFrames、Remotion 和未来 App Director 各自应该负责什么，有了比 PRD 更具体的认识。
+
+## 先确定故事，而不是先堆镜头
+
+TraceLink 有日志表、实时调用图、链路导图、时间线和 Scope 控制。如果按功能菜单依次展示，成片很容易变成一段信息密度很低的界面巡游。
+
+最后选择的是一条更短、也更能说明产品价值的事实链：
+
+```text
+Agent 报告“任务已完成”
+  -> 第一条 trace 出现被阻断的 writeFile
+  -> 目标路径是 /etc/passwd
+  -> data.reason 留下越过沙箱边界的原因
+  -> 输出路径改为 ./artifacts/research-summary.md
+  -> 第二条 trace 走过相同调用拓扑
+  -> writeFile 真正成功
+  -> 项目目录里出现真实产物
+```
+
+第一条 trace 中，Agent 最后仍然报告任务完成。但链路里的 `writeFile` 是 `blocked`，目标指向 `/etc/passwd`。视频先聚焦调用图中的失败节点，再打开符合真实 Dashboard 结构的详情抽屉，展示 `outcome`、目标路径和 `data.reason`。
+
+随后不改变沙箱边界，只把目标路径改到项目允许的 `./artifacts/research-summary.md`。第二条 trace 沿着同一套 plan、search、subAgent、summarize 和 writeFile 拓扑运行，这次不仅出现成功事件，脚本还实际创建了对应文件。
+
+这使视频里的“成功”不只是 UI 上换了一个绿色节点。fixture 检查会读取真实产物，核对内容，并确认 trace 中记录的字节数与文件一致。
+
+## Dashboard 源码是视觉权威
+
+TraceLink 视频没有把一张 Dashboard 截图放大后照着描。界面结构与视觉语言直接来自真实项目中的 TSX、CSS 和 token，包括：
+
+- ConnectionBar 与 Toolbar 的布局和控件关系；
+- TraceMapView 的侧栏、工具栏与 SVG 画布；
+- TraceMapNode、TraceMapEdge 的节点和连线语言；
+- LogDetailDrawer 的字段层级；
+- `tokens.css` 中的颜色、边框、间距和状态语义。
+
+视频工程为了确定性渲染，使用 React 重建了需要出镜的 Dashboard 状态，但字段、层级和视觉规则以上述源码为准。截图只用于渲染后的对照检查：看字号、间距、层级和构图是否偏离，不作为结构和样式的权威来源。
+
+这个顺序很重要。只参考截图，很容易得到“像 TraceLink 的一张图”；参考真实组件和 token，才更接近“TraceLink 在这个故事状态下应该呈现的界面”。
+
+## BossHelper 的 HyperFrames 片段究竟怎样进入 Remotion
+
+BossHelper 演示同时需要两类画面：根据产品源码重建的桌面应用，以及从浏览器保存、清理后的招聘网页状态。
+
+当时先在 HyperFrames 中完成了网页场景。它的核心不是一段预先渲染好的视频，而是 HTML、CSS 与 GSAP 动画：固定 1920×1080 视口，清理保存网页中的外部行为和调试噪音，再修正弹窗、遮罩、抽屉等元素的 z 轴关系。
+
+随后，这套 DOM 被移植进 Remotion 组件：
+
+- HTML 作为真实 DOM 挂载；
+- CSS 跟随组件进入 Remotion 工程；
+- GSAP timeline 保持暂停状态；
+- 每一个 Remotion frame 都换算成时间，并调用 `timeline.seek(time)`；
+- Remotion 再统一控制前后产品界面、镜头、高光、光标、字幕和转场。
+
+因此，“HyperFrames 画面插入 App 演示中间”并不是把 HyperFrames 先导出 MP4，再用 `<Video>` 播放；也不是在 Remotion 中嵌一个 iframe。真正进入主合成的是 HTML/CSS/GSAP DOM，本身仍受 Remotion 的逐帧时钟驱动。
+
+这样做比嵌入成片多一些工程工作，但保留了组件级调整能力。网页里的某个弹窗位置不对，可以直接改 DOM 或 CSS；某段 GSAP 动画节奏不对，可以改变时间线，而不必重新处理一段外部视频。
+
+## 第一版锁定机制：从固定坐标改成 DOM Ref
+
+BossHelper 的早期版本曾为鼠标和高光直接写 X/Y 坐标。一旦输入框宽度、padding 或侧栏尺寸变化，锁定就会漂移。
+
+后来的做法是把关键 HTML 元素通过 React Ref 注册到表里，再沿 `offsetParent` 计算它们相对于产品窗口的位置。高光框和光标终点消费同一份边界，整个 App 窗口也使用同一组相机变换。
+
+它解决了 BossHelper 的主要问题，但到了 TraceLink，又出现两个新变量：
+
+1. 调用图节点是 SVG `<g>`，不能只按 HTML 元素处理；
+2. Remotion Studio 会对 1920×1080 合成画布应用 Fit 缩放，CLI 渲染与 Studio 预览的 DOM 尺寸并不相同。
+
+所以第二支视频没有直接复制原来的测量函数，而是重新设计了目标注册和测量阶段。
+
+## TraceLink 的 6 个真实跟踪目标
+
+镜头脚本没有保存一套“看起来差不多”的像素坐标，而是注册了 6 个有语义的目标：
+
+| Key              | 对应真实元素                                       |
+| ---------------- | -------------------------------------------------- |
+| `trace-selector` | Trace Map 工具栏中的 trace 选择器 HTML 元素        |
+| `blocked-write`  | 第一条 trace 中被阻断的 `writeFile` SVG `<g>` 节点 |
+| `blocked-reason` | 详情抽屉里的 `data.reason` HTML 行                 |
+| `safe-path`      | 代码差异中的安全输出路径 HTML 行                   |
+| `fixed-write`    | 第二条 trace 中成功的 `writeFile` SVG `<g>` 节点   |
+| `success-proof`  | 真实写入完成后的证明横幅 HTML 元素                 |
+
+HTML 与 SVG 元素都通过 `useTargetRef()` 进入同一个注册表。相机、高光和虚拟鼠标只引用这些 key，不知道目标最终位于第几像素。
+
+缺少目标时也不使用备用坐标悄悄继续。目标不存在意味着当前界面结构与镜头脚本已经失配，应该在验证阶段暴露，而不是导出一支高光框漂在空中的视频。
+
+## 为什么测量前要等两次 requestAnimationFrame
+
+目标第一次挂载时，Remotion Studio 的 Fit transform 不一定已经完成。如果立刻读取 `getBoundingClientRect()`，根画布和子元素可能处于不同的缩放时刻。
+
+TraceLink 的 TargetRegistry 会：
+
+1. 用 `delayRender()` 阻止渲染继续；
+2. 等待 6 个 HTML/SVG target 全部挂载；
+3. 连续等待两次 `requestAnimationFrame`；
+4. 读取合成根节点与每个目标的 `getBoundingClientRect()`；
+5. 用根节点实际宽高除以逻辑画布的 1920×1080，得到 X/Y 缩放；
+6. 把浏览器坐标还原到合成画布坐标；
+7. 所有目标测量完成后调用 `continueRender()`。
+
+`useCurrentScale()` 只在根节点尺寸为零时作为回退。正常情况下，测量以真实合成根节点的宽高为准，因此同一套目标矩形既能适应 Studio 的 Fit 预览，也能适应 CLI 输出缩放。
+
+相机位置随后由这些矩形计算。聚焦 `blocked-write`、`blocked-reason` 或 `safe-path` 时，代码根据目标中心、尺寸和留白求出 camera translate 与 scale，而不是读取预设镜头坐标。
+
+## 目标、高光与相机必须在同一棵 transform tree
+
+坐标准确还不够。如果 Dashboard 接受一组变换，高光和光标却留在屏幕坐标系，镜头一缩放，它们仍然会分离。
+
+TraceLink 合成把 Dashboard、Spotlight 和 TrackedCursor 放在同一棵相机 transform tree 下：
+
+```text
+intro tilt
+  -> camera translate
+     -> camera scale
+        -> Dashboard
+        -> Spotlight
+        -> TrackedCursor
+```
+
+它们共同经历开场倾斜、镜头平移和缩放。目标在画面里移动多少，高光和光标就跟着移动多少。字幕与最终 CTA 则位于相机树之外，保持稳定的屏幕位置。
+
+这比不断补偿坐标更可靠，因为它从结构上保证了被跟踪对象与覆盖层使用相同的空间变换。
+
+## 视频数据不是手写的“成功截图”
+
+blocked 与 fixed 两组数据都由本地 TraceLink JavaScript SDK v0.6.4 生成，故事结构参考仓库中的 AI Agent 示例。
+
+第一组场景调用 `tracer.blocked()`，记录越过沙箱的写入意图，但不会真的触碰 `/etc/passwd`。第二组场景运行真实的安全写入，在项目目录创建 `artifacts/research-summary.md`，并记录 `writeFile.result`。
+
+为了让逐帧渲染可以复现，采集完成后只对随机 trace/span ID 和时间戳做确定性归一化；原始 NDJSON 仍保留在 fixtures 中。验证脚本检查：
+
+- blocked 场景恰好有一个 `blocked` outcome；
+- fixed 场景不存在 blocked outcome；
+- 两条链路都包含 `writeFile`；
+- 安全产物真实存在；
+- 产物内容与 trace 记录的字节数一致。
+
+这条边界让我觉得很重要：视频界面可以为叙事而重组，但支撑结论的数据和产物不能只是动画道具。
+
+## 字幕、时间线与输出规格
+
+65 秒成片以 30fps 运行，所有阶段都有明确帧区间：开场、揭示调用链、聚焦 blocked 节点、查看原因、修改目标路径、第二条 trace 成功、两条链路对照，最后进入 CTA。
+
+字幕由独立 JSON cue 数据驱动，按毫秒换算到 Remotion frame。它与镜头使用同一个时钟，因此修改一段叙事时，可以一起调整字幕、停留时间、高光和鼠标路径。当前版本包含中文字幕，没有配音。
+
+最终交付规格是：
+
+- 时长：65 秒；
+- 分辨率：1920×1080；
+- 帧率：30fps；
+- 本地网页版本：本文上方嵌入的 MP4；
+- 单独封面：本文视频 poster；
+- B 站：上传标题、简介、标签、字幕和封面包已经准备，发布后再补公开链接。
+
+这里不记录尚未稳定的文件体积，也不把一次导出耗时当作产品性能结论。
+
+## 两支视频之后，App Director 的边界更清楚了
+
+BossHelper 与 TraceLink 都证明了一件事：用代码控制软件演示，不只是把录屏换成动画。真正可复用的是一组更上层的结构：
+
+- 以产品源码而不是截图猜测作为界面权威；
+- 把真实运行数据整理成确定性场景；
+- 用语义 target 代替固定像素坐标；
+- 让相机、目标、高光和光标共享空间变换；
+- 用统一 frame 驱动 DOM、GSAP、字幕和转场；
+- 在导出前验证数据、目标和实际产物。
+
+还没有被消除的工作同样明显。两个项目都需要理解产品源码、挑选叙事、适配出镜状态和手工定义关键目标。TraceLink 的 6 个 target 可以稳定跟踪，但仍然是我先判断“观众应该看哪里”，再注册进去的。
+
+因此，App Director 下一步值得验证的不是重新实现 Remotion 或 HyperFrames，而是能否把这些重复步骤做成产品层：场景适配、目标注册、镜头脚本、字幕编排和多规格输出。
+
+如果换到第三个软件时仍然需要从头复制整个工程，它就只是我的制作方法。如果界面适配仍然专用，但跟踪、相机、字幕与验证管线能够稳定复用，它才开始接近一个产品。
+
+你可以到[产品实验室](/ideas)查看 App Director 的当前定义。B 站版本发布后，我也会把链接补回本文。

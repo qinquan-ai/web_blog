@@ -5,7 +5,7 @@ import IconArrowRight from "../ui/icons/IconArrowRight.astro";
 import { getCollection } from "astro:content";
 import { enrichPostsWithReadingTime } from "../lib/utils";
 
-const rawPosts = (await getCollection("blog"))
+const rawPosts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 5);
 
@@ -17,7 +17,7 @@ const posts = await enrichPostsWithReadingTime(rawPosts);
     <div class="container">
       <div class="hero-content">
         <p class="hero-description">
-          独立AI实践者的笔记与思考，帮助遇到同样问题的人。
+          记录真实软件从想法和 Demo 走向交付、维护与公开发布的过程。
         </p>
       </div>
     </div>

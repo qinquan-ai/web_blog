@@ -4,7 +4,7 @@ import SocialLinks from "../components/SocialLinks.astro";
 import { SITE } from "../lib/config";
 ---
 
-<Base title="关于" description="关于 Qin — 独立AI实践者的技术笔记本">
+<Base title="关于" description="关于覃权 / Qin Quan — 独立产品工程师">
   <div class="about-page">
     <div class="container">
       <div class="about-grid">
@@ -15,7 +15,7 @@ import { SITE } from "../lib/config";
           </div>
           <h1 class="about-name">{SITE.title}</h1>
           <p class="about-tagline text-secondary">
-            Freelancer · 全栈开发 · AI 应用
+            独立产品工程师 · 开源工具 · 软件交付
           </p>
 
           <SocialLinks variant="full" />
@@ -26,39 +26,43 @@ import { SITE } from "../lib/config";
           <section class="about-section">
             <h2>关于这个博客</h2>
             <p>
-              内容来自实际工作，会写AI实践、架构踩坑、偶尔也有非AI的技术内容。
+              我是覃权（Qin Quan）。这里记录真实软件怎样从能跑的 Demo，
+              变成能交付、能维护、能被别人安装和使用的产品。
             </p>
-            <p>如果某篇对你有用，就是我最大的满足。</p>
+            <p>
+              内容主要来自开源工具、商业交付、浏览器自动化和产品演示工作流。
+              我会尽量把选择、边界和走过的弯路写清楚。
+            </p>
           </section>
 
           <section class="about-section">
             <h2>技术栈</h2>
             <div class="skill-grid">
               <div class="skill-group">
-                <h3 class="skill-group-title">主战语言</h3>
+                <h3 class="skill-group-title">主要技术</h3>
                 <div class="skill-tags">
                   <span class="skill-tag">TypeScript</span>
                   <span class="skill-tag">Python</span>
-                  <span class="skill-tag">Go</span>
-                  <span class="skill-tag">Rust</span>
+                  <span class="skill-tag">Vue / React</span>
+                  <span class="skill-tag">Astro</span>
                 </div>
               </div>
               <div class="skill-group">
-                <h3 class="skill-group-title">AI 基础设施</h3>
+                <h3 class="skill-group-title">产品与交付</h3>
                 <div class="skill-tags">
-                  <span class="skill-tag">AI Proxy</span>
-                  <span class="skill-tag">Gemini API</span>
-                  <span class="skill-tag">Cursor / Cline</span>
-                  <span class="skill-tag">Tauri</span>
+                  <span class="skill-tag">FastAPI</span>
+                  <span class="skill-tag">PostgreSQL / Redis</span>
+                  <span class="skill-tag">Browser CDP</span>
+                  <span class="skill-tag">npm / PyPI</span>
                 </div>
               </div>
               <div class="skill-group">
-                <h3 class="skill-group-title">架构</h3>
+                <h3 class="skill-group-title">当前主题</h3>
                 <div class="skill-tags">
-                  <span class="skill-tag">CQRS</span>
-                  <span class="skill-tag">Celery + Redis</span>
-                  <span class="skill-tag">WebSocket</span>
-                  <span class="skill-tag">TCC 分布式事务</span>
+                  <span class="skill-tag">开发期可观测性</span>
+                  <span class="skill-tag">浏览器自动化</span>
+                  <span class="skill-tag">AI 工作流</span>
+                  <span class="skill-tag">产品演示视频</span>
                 </div>
               </div>
             </div>
