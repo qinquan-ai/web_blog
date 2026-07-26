@@ -9,7 +9,7 @@ import {
 } from '@shikijs/transformers';
 
 export default defineConfig({
-  site: 'https://qin-blog.pages.dev',
+  site: 'https://blog.qinquan-ai.com',
   integrations: [
     mdx(),
     sitemap(),
